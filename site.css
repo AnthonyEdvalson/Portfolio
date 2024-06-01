@@ -554,7 +554,7 @@ ul.timeline {
     flex-grow: 1;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     border-radius: 5px;
 }
 
@@ -563,6 +563,7 @@ ul.timeline {
     font-size: 2em;
     text-align: center;
     margin-bottom: 1em;
+    width: 100%;
 }
 
 button {
