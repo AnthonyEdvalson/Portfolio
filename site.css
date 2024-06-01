@@ -587,7 +587,8 @@ button:hover {
 }
 
 footer {
-    margin-top: 50px;
+    margin-top: 100px;
+    background-color: var(--base-secondary);
 }
 
 .footer-content {
@@ -610,6 +611,7 @@ footer {
 
 .footer-info {
     color: var(--text-subtle);
+    font-size: 0.8em;
 }
 
 #screensaver-canvas-container {
