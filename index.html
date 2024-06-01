@@ -13,6 +13,16 @@
 <html class="black">
     <head>
         <meta charset="UTF-8">
+        <title>Tony Edvalson</title>
+        <meta name="description" content="Tony Edvalson is a user-oriented full-stack engineer specializing in ML & data analysis.">
+        <meta name="author" content="Tony Edvalson">
+        <meta name="copyright" content="Tony Edvalson">
+        <meta name="keywords" content="Tony Edvalson, software engineer, machine learning, data analysis, full-stack, web development">
+        <meta name="theme-color" content="#000000">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="site.css">
+        <link rel="icon" href="favicon/fav-black.png" type="image/png" id="favicon">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
@@ -21,8 +31,6 @@
                     href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Urbanist:wght@300;400;500;700&display=swap" />
         </noscript>
 
-        <link rel="stylesheet" href="site.css">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <script>
             window.onload = function() {
                 let name = new URLSearchParams(window.location.search).get("hello");
@@ -69,11 +77,8 @@
                 if (themeName !== "rainbow") {
                     localStorage.setItem('theme', themeName);
                 }
-                updateClasses(themeName);
-            }
-
-            function updateClasses(themeName) {
                 document.documentElement.className = themeName;
+                document.getElementById('favicon').href = `favicon/fav-${themeName}.png`;
             }
 
             window.addEventListener('load', () => {
