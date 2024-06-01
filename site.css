@@ -73,8 +73,7 @@ html.rainbow {
     font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive;
 }
 
-html.rainbow h1,
-html.rainbow .modal h2 {
+html.rainbow h1 {
     font-family: Impact, sans-serif;
     color: #24c0fd;
     -webkit-text-stroke: 0.01em #0000aa;
@@ -202,7 +201,6 @@ a.button::after {
 .color {
     color: var(--accent);
     position: relative;
-    display: inline-block;
 }
 
 
@@ -316,62 +314,6 @@ html.wf-loading * {
     background: linear-gradient(45deg in oklab, #EF476F 20%, #FFD166 40%, #06D6A0 60%, #118AB2 80%);
 }
 
-.modal {
-    transition: all 0.3s cubic-bezier(0, 0, 0.2, 1);
-
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    opacity: 0;
-    pointer-events: none;
-
-    backdrop-filter: blur(20px);
-}
-
-.modal.show {
-    display: flex;
-    opacity: 1;
-    pointer-events: all;
-}
-
-.modal-content {
-    background-color: var(--text);
-    color: var(--base);
-    padding: 50px;
-    border-radius: 5px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-    max-width: 50%;
-    max-height: 90%;
-    overflow-y: auto;
-    transform: scale(0.8) translateY(50px);
-    transition: all 0.3s cubic-bezier(0, 0, 0.2, 1);
-}
-
-.modal.show .modal-content {
-    transform: none;
-}
-
-.modal-close {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    cursor: pointer;
-    font-size: 24px;
-}
-
-.modal h2 {
-    margin-bottom: 1em;
-    font-size: 2em;
-
-}
-
-
 #anim {
     position: absolute;
     right: 0px;
@@ -391,21 +333,20 @@ html.wf-loading * {
     position: relative;
 }
 
-.greet h1,
-.greet h2,
 .greet h3 {
     margin: 0.8em 0;
     line-height: 1.2em;
     width: 80%;
-    font-size: 3em;
+    font-size: 1.5rem;
 }
 
+.greet h1,
 .greet h2 {
     max-width: 800px;
-}
-
-.greet h3 {
-    font-size: 2em;
+    margin: 0.8em 0;
+    line-height: 1.2em;
+    width: 80%;
+    font-size: 2rem;
 }
 
 
@@ -455,7 +396,7 @@ html.wf-loading * {
 .section {
     margin: 0 auto;
     padding: 100px;
-    max-width: 1000px;
+    max-width: min(100vw, 1000px);
 
     display: flex;
     flex-direction: row;
@@ -608,13 +549,12 @@ ul.timeline {
 }
 
 .cta {
-    padding: 100px;
-    width: 10000px;
+    padding: 100px 0;
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: var(--base-secondary);
     border-radius: 5px;
 }
 
@@ -732,5 +672,51 @@ footer {
     }
     100% {
         opacity: 1;
+    }
+}
+
+
+
+
+
+
+
+
+@media (max-width: 768px) {
+    .section {
+        padding: 6em 2em;
+        flex-direction: column;
+    }
+
+    .section-title {
+        width: 100%;
+        text-align: center;
+        padding-right: 0;
+    }
+
+    .section-content {
+        width: 100%;
+    }
+
+    .greet {
+        padding: 100px 2em;
+    }
+
+    .shape {
+        width: 50vmin;
+        height: 50vmin;
+    }
+    
+    .shape::before {
+        width: 25vmin;
+        height: 25vmin;
+    }
+
+    .timeline li::before {
+        left: -1rem;
+    }
+
+    .timeline li::after {
+        left: -1rem;
     }
 }

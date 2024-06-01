@@ -38,31 +38,20 @@
                     const hello = document.getElementById('hello');
                     hello.innerText = `Hello, ${name}!`;
                 }
-            }
-            
-            function showModal() {
+
                 let parts = [
                     "dG9ueWVkdmF",
                     "sc29uQGdtYW",
                     "lsLmNvbQ=="
                 ]
                 let value = atob(parts.join(''));
-                let e = document.getElementById('em');
-                e.innerText = value;
-                e.href = `mailto:${value}`;
-                document.getElementById('contact-modal').classList.add('show');
-            }
-
-            function closeModal() {
-                document.getElementById('contact-modal').classList.remove('show');
-            }
-
-            window.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeModal();
+                let e = document.getElementsByClassName("em");
+                for (let i = 0; i < e.length; i++) {
+                    e[i].innerText = value;
+                    e[i].href = `mailto:${value}`;
                 }
-            });
-
+            }
+        
             function toggleSettings() {
                 let settings = document.getElementById("settings-panel");
                 if (settings.className === "settings-panel") {
@@ -92,18 +81,6 @@
             <canvas id="screensaver-canvas-webgl"></canvas>
             <canvas id="screensaver-canvas-2d" style="pointer-events: none"></canvas>
         </div>
-        <div id="contact-modal" class="modal" onclick="closeModal()">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <ion-icon name="close-sharp" class="modal-close" onclick="closeModal()"></ion-icon>
-                <h2>Let's Go!</h2>
-                <p>
-                    The best place to reach me is <a id="em"></a>. I'm always open to new opportunities, interesting projects, or just to chat! 
-                </p>
-                <p>
-                    You can also find me on <a href="https://www.linkedin.com/in/tonyedvalson/" target="_blank">LinkedIn</a>, although I'm a bit less active there.
-                </p>
-            </div>
-        </div>
         <div class="topbar">
             <div class="settings-panel" id="settings-panel">
                 <div class="settings" onclick="toggleSettings()">
@@ -120,20 +97,20 @@
         </div>
         <div class="container">
             <header class="greet">
-                <h1 class="slide delay-200" id="hello">
+                <h2 class="slide delay-200" id="hello">
                     Hello!
-                </h1>
+                </h2>
                 <div class="slide delay-400">
-                    <h2 class="rainbow-hide">
+                    <h1 class="rainbow-hide">
                         I'm <span class="color">Tony Edvalson</span>,<br/>a user-oriented full-stack engineer specializing in ML & data analysis.
-                    </h2>
-                    <h2 class="rainbow-show">
+                    </h1>
+                    <h1 class="rainbow-show">
                         i'm tony edvalson,<br/>and graphic design is my passion.
                         <span>i'm tony edvalson,<br/>and graphic design is my passion.</span>
-                    </h2>
+                    </h1>
                 </div>
                 <h3 class="greet-email slide delay-600">
-                    <button onclick="showModal()">Get in Touch<ion-icon name="mail-outline" style="font-size: 1.5em;"></ion-icon></button>
+                    <a class="em"></a>
                 </h3>
                 <img src="passion.webp" class="passion-cat rainbow-show" alt="Graphic design is my passion" />
             </header>
@@ -164,7 +141,7 @@
                             <div class="timeline-content">
                                 <div class="heading">
                                     <h3>
-                                        Google Play<span class="title-sep"></span>Software Engineer III
+                                        Google Play<span class="title-sep"></span>SWE III
                                     </h3>
                                     <div class="date">
                                         2021 &ndash; Present
@@ -359,10 +336,7 @@
             <div class="section">
                 <div class="cta">
                     <h2>Want to chat?</h2>
-                    <button onclick="showModal()">
-                        Get in Touch
-                        <ion-icon name="mail-outline" style="font-size: 1.5em;"></ion-icon>
-                    </button>
+                    <a class="em"></a>
                 </div>
             </div>
         </div>
