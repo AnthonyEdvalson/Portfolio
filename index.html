@@ -1,0 +1,383 @@
+<!--
+     __        __   _                            _
+     \ \      / /__| | ___ ___  _ __ ___   ___  | | 
+      \ \ /\ / / _ \ |/ __/ _ \| '_ ` _ \ / _ \ | |
+       \ V  V /  __/ | (_| (_) | | | | | |  __/ |_|
+        \_/\_/ \___|_|\___\___/|_| |_| |_|\___| (_)
+
+    I've hidden a few easter eggs on the site, let me know if you find them all!
+
+    Stay awesome :)
+
+-->
+<html class="black">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+        <noscript>
+            <link rel="stylesheet"
+                    href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Urbanist:wght@300;400;500;700&display=swap" />
+        </noscript>
+
+        <link rel="stylesheet" href="site.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <script>
+            window.onload = function() {
+                let name = new URLSearchParams(window.location.search).get("hello");
+                if (name) {
+                    const hello = document.getElementById('hello');
+                    hello.innerText = `Hello, ${name}!`;
+                }
+            }
+            
+            function showModal() {
+                let parts = [
+                    "dG9ueWVkdmF",
+                    "sc29uQGdtYW",
+                    "lsLmNvbQ=="
+                ]
+                let value = atob(parts.join(''));
+                let e = document.getElementById('em');
+                e.innerText = value;
+                e.href = `mailto:${value}`;
+                document.getElementById('contact-modal').classList.add('show');
+            }
+
+            function closeModal() {
+                document.getElementById('contact-modal').classList.remove('show');
+            }
+
+            window.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+
+            function toggleSettings() {
+                let settings = document.getElementById("settings-panel");
+                if (settings.className === "settings-panel") {
+                    settings.className = "settings-panel open";
+                }
+                else {
+                    settings.className = "settings-panel";
+                }
+            }
+
+            function setTheme(themeName) {
+                if (themeName !== "rainbow") {
+                    localStorage.setItem('theme', themeName);
+                }
+                updateClasses(themeName);
+            }
+
+            function updateClasses(themeName) {
+                document.documentElement.className = themeName;
+            }
+
+            window.addEventListener('load', () => {
+                let theme = localStorage.getItem('theme') || "black";
+                setTheme(theme);
+            });
+        </script>
+    </head>
+    <body>
+        <div id="screensaver-canvas-container" style="display: none;">
+            <canvas id="screensaver-canvas-webgl"></canvas>
+            <canvas id="screensaver-canvas-2d" style="pointer-events: none"></canvas>
+        </div>
+        <div id="contact-modal" class="modal" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <ion-icon name="close-sharp" class="modal-close" onclick="closeModal()"></ion-icon>
+                <h2>Let's Go!</h2>
+                <p>
+                    The best place to reach me is <a id="em"></a>. I'm always open to new opportunities, interesting projects, or just to chat! 
+                </p>
+                <p>
+                    You can also find me on <a href="https://www.linkedin.com/in/tonyedvalson/" target="_blank">LinkedIn</a>, although I'm a bit less active there.
+                </p>
+            </div>
+        </div>
+        <div class="topbar">
+            <div class="settings-panel" id="settings-panel">
+                <div class="settings" onclick="toggleSettings()">
+                    <ion-icon class="rainbow-hide" name="settings-sharp"></ion-icon>
+                    <img class="rainbow-show" src="untitlerd.gif" alt="setings" />
+                </div>
+                <div class="settings-panel-themes">
+                    <div class="theme black" onclick="setTheme('black')"></div>
+                    <div class="theme dark" onclick="setTheme('dark')"></div>
+                    <div class="theme light" onclick="setTheme('light')"></div>
+                    <div class="theme rainbow" onclick="setTheme('rainbow')"></div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <header class="greet">
+                <h1 class="slide delay-200" id="hello">
+                    Hello!
+                </h1>
+                <div class="slide delay-400">
+                    <h2 class="rainbow-hide">
+                        I'm <span class="color">Tony Edvalson</span>,<br/>a user-oriented full-stack engineer specializing in ML & data analysis.
+                    </h2>
+                    <h2 class="rainbow-show">
+                        i'm tony edvalson,<br/>and graphic design is my passion.
+                        <span>i'm tony edvalson,<br/>and graphic design is my passion.</span>
+                    </h2>
+                </div>
+                <h3 class="greet-email slide delay-600">
+                    <button onclick="showModal()">Get in Touch<ion-icon name="mail-outline" style="font-size: 1.5em;"></ion-icon></button>
+                </h3>
+                <img src="passion.webp" class="passion-cat rainbow-show" alt="Graphic design is my passion" />
+            </header>
+            <div class="rainbow-hide shape"></div>  
+            <div class="section">
+                <div class="section-title">
+                    <h2>Background</h2>
+                </div>
+                <div class="section-content">
+                    <p>
+                        I'm currently working at <a href="https://google.com" target="_blank">Google</a> where I get to develop large-scale data pipelines that improve the experience of over 2.5 billion users. 
+                    </p>
+                    <p>
+                        After devloping software professionally for seven years, I've taken an interest in optimization and problem solving. I enjoy using machine learning and data science to make sense of complex datasets, and I have experience doing so in both established tech giants and <a href="https://www.pickuppatrol.net/" target="_blank">companies I've founded</a>.
+                    </p>
+                    <p>
+                        Outside of work, I love to tinker with side projects like experimenting with generative music systems and creative writing. I also love to design unconventional factories in Factorio, build megastructures in Minecraft, or wander the Lands Between in Elden Ring.
+                    </p>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">
+                    <h2>Experience</h2>
+                </div>
+                <div class="section-content">
+                    <ul class="timeline">
+                        <li>
+                            <div class="timeline-content">
+                                <div class="heading">
+                                    <h3>
+                                        Google Play<span class="title-sep"></span>Software Engineer III
+                                    </h3>
+                                    <div class="date">
+                                        2021 &ndash; Present
+                                    </div>
+                                </div>
+                                <p>
+                                    Manage petabyte-scale data pipelines for Android's app store, and reduiced install times by 30% with machine optimization.
+                                    Coordinated multi-quarter development and compliance projects, and mentored new team members.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="timeline-content">
+                                <div class="heading">
+                                    <h3>
+                                        IBM<span class="title-sep"></span>Software Developer Intern
+                                    </h3>
+                                    <div class="date">
+                                        Jun &ndash; Aug 2021
+                                    </div>
+                                </div>
+                                <p>
+                                    Researched a new deep learning model that tripled the accuracy of predicting extreme weather events two months in advance.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="timeline-content">
+                                <div class="heading">
+                                    <h3>
+                                        PickUp Patrol<span class="title-sep"></span>Founder
+                                    </h3>
+                                    <div class="date">
+                                        2014 &ndash; 2021
+                                    </div>
+                                </div>
+                                <p>
+                                    Founded an industry leading dismissal system for K-12 schools. We currently serve over 650 schools and 550,000 users internationally. Led product design, sales, and gave investor pitches, growing the team to seven full-time employees.
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                    <a href="tony-edvalson-resume.pdf" class="button" target="_blank" download>View Resume</a>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">
+                    <h2>Projects</h2>
+                </div>
+                <div class="section-content">
+                    <p>
+                        I work on a variety of side projects in my free time. Here are a few of my favorites.
+                        <br/>
+                        <br/>
+                    </p>
+                    <div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <h3>Manifork<span class="title-sep"></span>Recreational Finance Platform</h3>
+                                <div class="date">2024</div>
+                            </div>
+                            <p>
+                                Manifork is an in-development platform for exploring the world of finance without the risk of losing real money. Users can bet, trade, and profit in a fully simulated economy.
+                            </p>
+                            <p>
+                                I'm one of the lead contributors to the project, doing full stack development and directing the product.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Finance</span>
+                                <span class="tag">Economics</span>
+                                <span class="tag">JS</span>
+                                <span class="tag">Next.js</span>
+                                <span class="tag">Tailwind</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <h3>Apollo<span class="title-sep"></span>High Quality Generative Music</h3>
+                                <div class="date">2024</div>
+                            </div>
+                            <p>
+                                Apollo uses ML and signal processing techniques to generate music. It utilizes variational autoencoders, customized ResNet blocks, and specialized loss functions to generate music within a latent representation.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Generative AI</span>
+                                <span class="tag">VAEs</span>
+                                <span class="tag">Music Generation</span>
+                                <span class="tag">Tensorflow</span>
+                                <span class="tag">Pandas</span>
+                                <span class="tag">Numpy</span>
+                                <span class="tag">Signal Processing</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <h3>Bolt<span class="title-sep"></span>LLM Assisted Web Development</h3>
+                                <div class="date">2023</div>
+                            </div>
+                            <p>
+                                Bolt is a coding assistant that allows users to develop websites in plain English. It can edit, correct errors, and implement complex interactions from scratch, like modals, shopping carts, and checkout functionality.
+                            </p>
+                            <p>
+                                My favorite part about it is a system for optimizing data in the context. Since the amount of code is much larger than the LLM's context, I developed a system of iterative summarization based on information theory. files less relevant to the current task are compressed so it can maximize the information available. Then a bin packing system figures out what should fit into the context.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">LLMs</span>
+                                <span class="tag">RAG</span>
+                                <span class="tag">Prompt Engineering</span>
+                                <span class="tag">GPT-4</span>
+                                <span class="tag">LangChain</span>
+                                <span class="tag">JS</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <h3>Owl<span class="title-sep"></span>A New Programming Language</h3>
+                                <div class="date">2023</div>
+                            </div>
+                            <p>
+                                Owl is a programming language I made. It's an interpreted language with a many powerful features that are designed to make code that is surprisingly clean and compact.
+                            </p>
+                            <p>
+                                A past version of this portfolio was hosted on a server written entirely in Owl, but since it's not a standard language, the hosting was too expensive to maintain :'(
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Go</span>
+                                <span class="tag">Programming Languages</span>
+                                <span class="tag">Interpreters</span>
+                                <span class="tag">Compilers</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <h3>Reddit Map<span class="title-sep"></span>Visualizing Reddit Data</h3>
+                                <div class="date">2021</div>
+                            </div>
+                            <p>
+                                In this project I visualized the relatedness of subreddits by analyzing the comments and posts of users. I used D3.js to create a force-directed graph that showed the connections between related subreddits.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Reddit</span>
+                                <span class="tag">Data Visualization</span>
+                                <span class="tag">D3.js</span>
+                                <span class="tag">Python</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <h3>FMIPS<span class="title-sep"></span>Factorio MIPS Processor</h3>
+                                <div class="date">2020</div>
+                            </div>
+                            <p>
+                                I built a fully compliant processor in the video game Factorio that can execute MIPS assembly at a blazing 2 instructions per second. I was able to execute arbitrary C programs on the processor by writing a script that converted C to MIPS assembly, and automatically wrote the assembly to the computer's memory.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Factorio</span>
+                                <span class="tag">MIPS</span>
+                                <span class="tag">Assembly</span>
+                                <span class="tag">Computer Architecture</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <h3>MCAlloy<span class="title-sep"></span>Python Interpreter for Minecraft</h3>
+                                <div class="date">2019</div>
+                            </div>
+                            <p>
+                                MCAlloy is a tool that allows python code to be executed in Mincraft using datapacks. A simple python interpreter is able to execute arbitrary python scripts, making it much easier to write complex scripts in Minecraft.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Minecraft</span>
+                                <span class="tag">Python</span>
+                                <span class="tag">Transpilers</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="section">
+                <div class="cta">
+                    <h2>Want to chat?</h2>
+                    <button onclick="showModal()">
+                        Get in Touch
+                        <ion-icon name="mail-outline" style="font-size: 1.5em;"></ion-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <div class="footer-content">
+                <div class="footer-info">
+                    <span>Site and styes were all created by me. No frameworks, no fnord, no templates.</span>
+                </div>
+            </div>
+        </footer>
+        <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+        <script>
+            console.log("Yahaha! You found me! 🌱")
+        </script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/three.js/98/three.min.js"
+            integrity="sha256-MbIcpOhIEGLabqntH1B7ZgE7a6V0TrocmKouz1npT1g="
+            crossorigin="anonymous"
+        ></script>
+        <script src="screensaver.js"></script>
+    </body>
+</html>
