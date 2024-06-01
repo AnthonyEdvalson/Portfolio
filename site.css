@@ -686,7 +686,7 @@ footer {
 
 @media (max-width: 768px) {
     .section {
-        padding: 6em 2em;
+        padding: 6em 1em;
         flex-direction: column;
     }
 
@@ -701,7 +701,7 @@ footer {
     }
 
     .greet {
-        padding: 100px 2em;
+        padding: 100px 1em;
     }
 
     .shape {
@@ -715,10 +715,10 @@ footer {
     }
 
     .timeline li::before {
-        left: -1rem;
+        left: -0.5rem;
     }
 
     .timeline li::after {
-        left: -1rem;
+        left: -0.5rem;
     }
 }
