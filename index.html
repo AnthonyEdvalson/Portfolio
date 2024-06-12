@@ -17,7 +17,7 @@
         <meta name="description" content="Tony Edvalson is a user-oriented full-stack engineer specializing in ML & data analysis.">
         <meta name="author" content="Tony Edvalson">
         <meta name="copyright" content="Tony Edvalson">
-        <meta name="keywords" content="Tony Edvalson, software engineer, machine learning, data analysis, full-stack, web development">
+        <meta name="keywords" content="Tony Edvalson, software engineer, machine learning, data engineering, full-stack, web development">
         <meta name="theme-color" content="#000000">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -39,16 +39,21 @@
                     hello.innerText = `Hello, ${name}!`;
                 }
 
+                // Gotta protect my email from those pesky bots
                 let parts = [
                     "dG9ueWVkdmF",
                     "sc29uQGdtYW",
                     "lsLmNvbQ=="
-                ]
+                ];
                 let value = atob(parts.join(''));
                 let e = document.getElementsByClassName("em");
                 for (let i = 0; i < e.length; i++) {
                     e[i].innerText = value;
                     e[i].href = `mailto:${value}`;
+                    // e[i].addEventListener("click", () => {
+                    //     navigator.clipboard.writeText(value);
+
+                    // });
                 }
             }
         
@@ -102,15 +107,21 @@
                 </h2>
                 <div class="slide delay-400">
                     <h1 class="rainbow-hide">
-                        I'm <span class="color">Tony Edvalson</span>,<br/>a user-oriented full-stack engineer specializing in ML & data analysis.
+                        I'm <span class="color">Tony Edvalson</span>,<br/>a user-oriented software engineer specializing in ML & data engineering.
                     </h1>
                     <h1 class="rainbow-show">
                         i'm tony edvalson,<br/>and graphic design is my passion.
-                        <span>i'm tony edvalson,<br/>and graphic design is my passion.</span>
                     </h1>
                 </div>
-                <h3 class="greet-email slide delay-600">
-                    <a class="em"></a>
+                <h3 class="greet-contact slide delay-600">
+                    <div class="greet-contact-item">
+                        <ion-icon name="mail-sharp"></ion-icon>
+                        <a class="em"></a>
+                    </div>
+                    <div class="greet-contact-item">
+                        <ion-icon name="logo-linkedin"></ion-icon>
+                        <a href="https://www.linkedin.com/in/tonyedvalson/">linkedin.com/in/tonyedvalson</a>
+                    </div>
                 </h3>
                 <img src="passion.webp" class="passion-cat rainbow-show" alt="Graphic design is my passion" />
             </header>
@@ -121,13 +132,13 @@
                 </div>
                 <div class="section-content">
                     <p>
-                        I'm currently working at <a href="https://google.com" target="_blank">Google</a> where I get to develop large-scale data pipelines that improve the experience of over 2.5 billion users. 
+                        I currently work at <a href="https://google.com" target="_blank">Google</a> where I get to develop large-scale data pipelines that improve the experience of over 2.5 billion users. 
                     </p>
                     <p>
-                        After devloping software professionally for seven years, I've taken an interest in optimization and problem solving. I enjoy using machine learning and data science to make sense of complex datasets, and I have experience doing so in both established tech giants and <a href="https://www.pickuppatrol.net/" target="_blank">companies I've founded</a>.
+                        After devloping software professionally for seven years, I've taken an interest in optimization and problem solving. My best work uses data science and ML to make sense of complex datasets, and I have experience doing so in both established tech giants and <a href="https://www.pickuppatrol.net/" target="_blank">companies I've founded</a>.
                     </p>
                     <p>
-                        Outside of work, I love to tinker with side projects like experimenting with generative music systems and creative writing. I also love to design unconventional factories in Factorio, build megastructures in Minecraft, or wander the Lands Between in Elden Ring.
+                        Outside of work, I love to tinker with side projects, such as experimenting with generative music systems and creative writing. I competitively trade prediction markets on <a href="https://manifold.markets/">Manifold</a>, where I'm ranked in the top 0.5% of active users. And to relax I love to mess around in sandbox video games like Factorio and Minecraft.
                     </p>
                 </div>
             </div>

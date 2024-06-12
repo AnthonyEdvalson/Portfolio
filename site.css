@@ -35,8 +35,8 @@ html.black {
 html.dark {
     --base: #343332;
     --base-secondary: #4A4846;
-    --text: #ddd;
-    --text-subtle: #a8a8a8;
+    --text: #eee;
+    --text-subtle: #bbb;
     --accent: #1CB853;
 }
 
@@ -175,10 +175,18 @@ p + p {
 }
 
 
-a {
+a,
+.em {
     outline: none;
     text-decoration: underline;
+    text-decoration-color: var(--text-subtle);
     color: inherit;
+    transition: text-decoration-color 0.15s ease-out;
+    cursor: pointer;
+}
+
+a:hover {
+    text-decoration-color: var(--text);
 }
 
 a.button {
@@ -349,6 +357,23 @@ html.wf-loading * {
     font-size: 2rem;
 }
 
+.greet-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    color: var(--text-subtle);
+}
+
+.greet-contact-item {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+    align-items: center;
+}
+
+.greet-contact-item a {
+    text-decoration: none;
+}
 
 .greet .passion-cat {
     position: absolute;
