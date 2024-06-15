@@ -60,8 +60,8 @@ html.light {
 html.rainbow {
     --base: #EF476F;
     --base-secondary: #FFD166;
-    --text: #FFF;
-    --text-subtle: rgba(255, 255, 255, 0.5);
+    --text: #000;
+    --text-subtle: rgba(0, 0, 0, 0.7);
     --accent: #36d49c;
 
     background-size: 100% 125vh;
@@ -82,7 +82,7 @@ html.rainbow h1 {
     letter-spacing: -0.05em;
 }
 
-html.rainbow .greet h2 {
+html.rainbow .greet-hello {
     background: linear-gradient(to bottom, #be5622 0%, #f5c31e 73%);
     background-clip: text;
     -webkit-background-clip: text;
@@ -93,7 +93,7 @@ html.rainbow .greet h2 {
     /* transform: skew(0, -10deg) scale(1, 1.5); */
 }
 
-html.rainbow .greet h2 span {
+html.rainbow .greet-hello span {
     color: transparent;
     text-shadow: 0.03em 0.03em 0px #57300e, 0.06em 0.06em 0px #57300e, 0.09em 0.09em 0px #57300e, 0.12em 0.12em 0px #57300e, 0.15em 0.15em 0px #57300e, 0.18em 0.18em 0px #57300e;
     position: absolute;
@@ -211,6 +211,12 @@ a.button::after {
     position: relative;
 }
 
+.icon {
+    stroke: var(--text);
+    fill: var(--text);
+    width: 1em;
+    height: 1em;
+}
 
 html.wf-loading * {
     opacity: 0;
@@ -246,11 +252,6 @@ html.wf-loading * {
     bottom: 0;
 
     cursor: pointer;
-}
-
-.settings ion-icon {
-    color: var(--text);
-    mix-blend-mode: difference;
 }
 
 .settings img {
@@ -357,11 +358,12 @@ html.wf-loading * {
     font-size: 2rem;
 }
 
-.greet-contact {
+.greet h2.greet-contact {
     display: flex;
     flex-direction: column;
     gap: 0.5em;
     color: var(--text-subtle);
+    font-size: 1.5rem;
 }
 
 .greet-contact-item {
