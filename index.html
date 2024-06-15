@@ -20,7 +20,7 @@
         <meta name="author" content="Tony Edvalson">
         <meta name="copyright" content="Tony Edvalson">
         <meta name="keywords" content="Tony Edvalson, software engineer, machine learning, data engineering, full-stack, web development">
-        <meta name="theme-color" content="#000000">
+        <meta name="theme-color" content="#f6f8fa" id="theme-color">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link rel="stylesheet" href="site.css">
@@ -71,6 +71,7 @@
                 }
                 document.documentElement.className = themeName;
                 document.getElementById('favicon').href = `favicon/fav-${themeName}.png`;
+                document.getElementById('theme-color').content = getComputedStyle(document.documentElement).getPropertyValue("--base");
             }
 
             window.addEventListener('load', () => {

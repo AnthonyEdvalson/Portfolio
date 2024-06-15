@@ -21,7 +21,6 @@ div {
 
 html {
     font-family: "Mulish", sans-serif;
-    background-color: var(--base);
 }
 
 html.black {
@@ -158,6 +157,8 @@ body {
     min-height: 100vh;
     width: 100%;
     overflow-x: hidden;
+    
+    background-color: var(--base);
 }
 
 h1, h2, h3, h4, h5, h6 {
