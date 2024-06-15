@@ -47,15 +47,6 @@ html.light {
     --accent: #0da241;
 }
 
-@keyframes rainbow {
-    0% {
-		background-position: 0% 0%;
-	}
-	100% {
-		background-position: 0% 125vh;
-	}
-}
-
 html.rainbow {
     --base: #EF476F;
     --base-secondary: #FFD166;
@@ -63,22 +54,16 @@ html.rainbow {
     --text-subtle: rgba(0, 0, 0, 0.7);
     --accent: #36d49c;
 
-    background-size: 100% 125vh;
-    background-image: repeating-linear-gradient(to bottom in oklab, #c83d69 0%, #e2de30 20%, #36d49c 40%, #53c1e0 60%, #964df5 80%, #c83d69 100%);
-    animation-duration: 15s;
-    animation-iteration-count: infinite;
-    animation-name: rainbow;
-    animation-timing-function: linear;
     font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive;
 }
 
 html.rainbow h1 {
-    font-family: Impact, sans-serif;
+    font-family: Impact, "Anton", sans-serif;
     color: #24c0fd;
     -webkit-text-stroke: 0.01em #0000aa;
     filter: progid:DXImageTransform.Microsoft.Glow(Color=#0000aa,Strength=1);
     text-shadow: 0.13em -0.13em 0px #0000aa;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.1em;
 }
 
 html.rainbow .greet-hello {
@@ -88,8 +73,7 @@ html.rainbow .greet-hello {
     color: transparent;
     -webkit-text-fill-color: transparent;
     position: relative;
-    font-family: Impact, sans-serif;
-    /* transform: skew(0, -10deg) scale(1, 1.5); */
+    font-family: Impact, "Anton", sans-serif;
 }
 
 html.rainbow .greet-hello span {
@@ -105,7 +89,7 @@ html.rainbow .greet-hello span {
 html.rainbow .section-title h2 {
     transform: skew(0, -10deg) scale(1, 1.5);
     letter-spacing: -0.01em;
-    font-family: Impact, sans-serif;
+    font-family: Impact, "Anton", sans-serif;
     background: linear-gradient(to bottom, #4222be 0%, #a62cc1 73%);
     -webkit-text-stroke: 0.01em #B28FFD;
     filter: progid:DXImageTransform.Microsoft.Glow(Color=#b28ffd, Strength=1);
@@ -159,6 +143,30 @@ body {
     overflow-x: hidden;
 
     background-color: var(--base);
+}
+
+.rainbow body {
+    /*
+        ♫ Remember we were here ♫
+        ♫ When you get back ♫
+        ♫ Remember we were never found ♫
+    */
+    background-size: 100% 125vh;
+    background-image: repeating-linear-gradient(to bottom in oklab, #c83d69 0%, #e2de30 20%, #36d49c 40%, #53c1e0 60%, #964df5 80%, #c83d69 100%);
+    animation-duration: 15s;
+    animation-iteration-count: infinite;
+    animation-name: rainbow;
+    animation-timing-function: linear;
+    background-color: green !important;
+}
+
+@keyframes rainbow {
+    0% {
+		background-position: 0% 0%;
+	}
+	100% {
+		background-position: 0% 125vh;
+	}
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -415,15 +423,6 @@ html.wf-loading * {
     clip-path: polygon(0 0, 100% 0, 100% 100%);
     z-index: -2;
 }
-
-/* .greet .name:hover::before {
-    content: "Pronounced /ˈtəʊni ˈɛdˈvəlˈsən/";
-    position: absolute;
-    top: 0;
-    left: 0;
-    font-size: 0.5em;
-    background-color: var(--base);
-} */
 
 .section {
     margin: 0 auto;
@@ -735,6 +734,10 @@ footer {
 
     .greet {
         padding: 100px 1em;
+    }
+
+    html.rainbow .passion-cat {
+        display: none !important;
     }
 
     .shape {
