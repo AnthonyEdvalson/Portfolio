@@ -143,6 +143,8 @@ body {
     overflow-x: hidden;
 
     background-color: var(--base);
+
+    position: relative;
 }
 
 .rainbow body {
@@ -157,7 +159,6 @@ body {
     animation-iteration-count: infinite;
     animation-name: rainbow;
     animation-timing-function: linear;
-    background-color: green !important;
 }
 
 @keyframes rainbow {
@@ -228,6 +229,22 @@ a.button::after {
     min-width: 1em;
     min-height: 1em;
     display: inline-block;
+}
+
+.icon.arrow {
+    stroke: var(--text);
+    fill: none;
+    stroke-width: 0.1em;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    padding: 0.2em;
+    margin-left: 0.5em;
+    transition: transform 0.05s ease;
+    transform: translate(-0.1em,0.1em);
+}
+
+a:hover .icon.arrow {
+    transform: translate(0.15em,-0.15em);
 }
 
 html.wf-loading * {
@@ -621,6 +638,7 @@ button:hover {
 footer {
     margin-top: 100px;
     background-color: var(--base-secondary);
+    position: relative;
 }
 
 .footer-content {
@@ -644,6 +662,16 @@ footer {
 .footer-info {
     color: var(--text-subtle);
     font-size: 0.8em;
+}
+
+.subfooter {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    z-index: -1;
+    position: fixed;
+    bottom: 40px;
+    left: 20px;
 }
 
 #screensaver-canvas-container {
