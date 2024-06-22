@@ -28,7 +28,6 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@200..1000&display=swap" rel="stylesheet">  
-
         <script>
             window.onload = function() {
                 let name = new URLSearchParams(window.location.search).get("hello");
@@ -80,6 +79,15 @@
             });
         </script>
     </head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-M50JEYPFZE"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-M50JEYPFZE');
+    </script>
     <body>
         <div id="screensaver-canvas-container" style="display: none;">
             <canvas id="screensaver-canvas-webgl"></canvas>
@@ -204,7 +212,7 @@
                                     </div>
                                 </div>
                                 <p>
-                                    Founded an industry leading dismissal system for K-12 schools. We currently serve over 650 schools and 550,000 users internationally. Led product design, sales, and gave investor pitches, growing the team to seven full-time employees.
+                                    Founded an industry leading school dismissal system. We support over 600 schools and 500,000 users internationally. Led product design, sales, gave investor pitches, and grew the company to support many full-time employees.
                                 </p>
                             </div>
                         </li>
@@ -304,7 +312,7 @@
                                 Owl is a programming language I made. It's an interpreted language with a many powerful features that are designed to make code that is surprisingly clean and compact.
                             </p>
                             <p>
-                                A past version of this portfolio was hosted on a server written entirely in Owl, but since it's not a standard language, the hosting was too expensive to maintain :'(
+                                A past version of this site was hosted on a server written entirely in Owl, but since it's not a standard language, the hosting was too expensive to maintain :'(
                             </p>
                             <div class="project-tags">
                                 <span class="tag">Go</span>
@@ -392,7 +400,7 @@
         <footer>
             <div class="footer-content">
                 <div class="footer-info">
-                    <span>Site and styes all created by me. No frameworks, no fnord, no templates. Source code is on <a href="https://github.com/AnthonyEdvalson/Portfolio" target="_blank">GitHub</a>.</span>
+                    <span>Site and styes all created by me. No frameworks, no <a onclick="grantAchievement('discord')">fnord</a>, no templates. Source code is on <a href="https://github.com/AnthonyEdvalson/Portfolio" target="_blank">GitHub</a>.</span>
                 </div>
             </div> 
             <div class="subfooter">
@@ -493,15 +501,20 @@
                 "Hot!",
                 "HOT HOT HOT!",
             ]
+            let leaving = false;
             window.addEventListener('scroll', () => {
                 let maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 let subfooter = document.getElementById('subfooter-msg');
-                let i = Math.floor((window.scrollY - maxScroll - 50) / 40);
+                let i = Math.floor((window.scrollY - maxScroll - 50) / 50);
                 if (i < 0) {
                     subfooter.innerText = "";
                 }
                 else if (i >= msgs.length) {
                     // You can probably guess what this does
+                    if (leaving) {
+                        return;
+                    }
+                    leaving = true; // Prevents the page from redirecting multiple times
                     window.location.href = atob("aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==");
                 }
                 else {
@@ -509,5 +522,71 @@
                 }
             });
         </script>
+        <script>
+            /* Achievements, don't look unless you want to spoil the fun */
+            /* Also, under construction, most of this doesn't work yet */
+
+            function grantAchievement(name) {
+                let achievements = JSON.parse(localStorage.getItem('achievements')) || {};
+                if (achievements[name]) {
+                    return;
+                }
+                achievements[name] = true;
+                localStorage.setItem('achievements', JSON.stringify(achievements));
+                updateAchievementPanel();
+                alert(`Achievement unlocked: ${name}`);
+            }
+
+            function updateAchievementPanel() {
+                let achievements = JSON.parse(localStorage.getItem('achievements')) || {};
+                for (let name in achievements) {
+                    let ach = document.getElementById(`ach-${name}`);
+                    if (ach) {
+                        ach.classList.add('unlocked');
+                    }
+                }
+            }
+
+            const buffer = [];
+            window.addEventListener('keydown', (e) => {
+                buffer.push(e.key);
+                if (buffer.length > 10) {
+                    buffer.shift();
+                }
+                if (buffer.join('|') === "ArrowUp|ArrowUp|ArrowDown|ArrowDown|ArrowLeft|ArrowRight|ArrowLeft|ArrowRight|b|a") {
+                    grantAchievement("konami");
+                }
+            });
+
+            window.addEventListener('load', () => {
+                updateAchievementPanel();
+            });
+        </script>
+        <div class="achievement-panel">
+            <div class="achievement" id="ach-discord">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 512 512"><path d="M399.9 80V32H112v48H32v38c0 32 9.5 62.79 26.76 86.61 13.33 18.4 34.17 31.1 52.91 37.21 5.44 29.29 20.2 57.13 50.19 79.83 22 16.66 48.45 28.87 72.14 33.86V436h-74v44h192v-44h-74v-80.49c23.69-5 50.13-17.2 72.14-33.86 30-22.7 44.75-50.54 50.19-79.83 18.74-6.11 39.58-18.81 52.91-37.21C470.5 180.79 480 150 480 118V80zM94.4 178.8c-10.68-14.68-17.17-34.4-18.24-54.8H112v67.37c-3.94-1.14-12.92-6.12-17.6-12.57zm323.2 0c-4.6 6.61-11.6 12.58-17.6 12.58 0-22.4 0-46.29-.05-67.38h35.9c-1.08 20.4-7.85 39.9-18.25 54.8z"/></svg>
+                <h3>Hodge & Podge</h3>
+            </div>
+            <div class="achievement" id="ach-console">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 512 512"><path d="M399.9 80V32H112v48H32v38c0 32 9.5 62.79 26.76 86.61 13.33 18.4 34.17 31.1 52.91 37.21 5.44 29.29 20.2 57.13 50.19 79.83 22 16.66 48.45 28.87 72.14 33.86V436h-74v44h192v-44h-74v-80.49c23.69-5 50.13-17.2 72.14-33.86 30-22.7 44.75-50.54 50.19-79.83 18.74-6.11 39.58-18.81 52.91-37.21C470.5 180.79 480 150 480 118V80zM94.4 178.8c-10.68-14.68-17.17-34.4-18.24-54.8H112v67.37c-3.94-1.14-12.92-6.12-17.6-12.57zm323.2 0c-4.6 6.61-11.6 12.58-17.6 12.58 0-22.4 0-46.29-.05-67.38h35.9c-1.08 20.4-7.85 39.9-18.25 54.8z"/></svg>
+                <h3>Yahaha!</h3>
+            </div> 
+            <div class="achievement" id="ach-page-not-found">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 512 512"><path d="M399.9 80V32H112v48H32v38c0 32 9.5 62.79 26.76 86.61 13.33 18.4 34.17 31.1 52.91 37.21 5.44 29.29 20.2 57.13 50.19 79.83 22 16.66 48.45 28.87 72.14 33.86V436h-74v44h192v-44h-74v-80.49c23.69-5 50.13-17.2 72.14-33.86 30-22.7 44.75-50.54 50.19-79.83 18.74-6.11 39.58-18.81 52.91-37.21C470.5 180.79 480 150 480 118V80zM94.4 178.8c-10.68-14.68-17.17-34.4-18.24-54.8H112v67.37c-3.94-1.14-12.92-6.12-17.6-12.57zm323.2 0c-4.6 6.61-11.6 12.58-17.6 12.58 0-22.4 0-46.29-.05-67.38h35.9c-1.08 20.4-7.85 39.9-18.25 54.8z"/></svg>
+                <h3>Are you lost?</h3>
+            </div>
+            <div class="achievement" id="ach-konami">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 512 512"><path d="M399.9 80V32H112v48H32v38c0 32 9.5 62.79 26.76 86.61 13.33 18.4 34.17 31.1 52.91 37.21 5.44 29.29 20.2 57.13 50.19 79.83 22 16.66 48.45 28.87 72.14 33.86V436h-74v44h192v-44h-74v-80.49c23.69-5 50.13-17.2 72.14-33.86 30-22.7 44.75-50.54 50.19-79.83 18.74-6.11 39.58-18.81 52.91-37.21C470.5 180.79 480 150 480 118V80zM94.4 178.8c-10.68-14.68-17.17-34.4-18.24-54.8H112v67.37c-3.94-1.14-12.92-6.12-17.6-12.57zm323.2 0c-4.6 6.61-11.6 12.58-17.6 12.58 0-22.4 0-46.29-.05-67.38h35.9c-1.08 20.4-7.85 39.9-18.25 54.8z"/></svg>
+                <h3>Konami</h3>
+            </div>
+            <div class="achievement" id="ach-art">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 512 512"><path d="M399.9 80V32H112v48H32v38c0 32 9.5 62.79 26.76 86.61 13.33 18.4 34.17 31.1 52.91 37.21 5.44 29.29 20.2 57.13 50.19 79.83 22 16.66 48.45 28.87 72.14 33.86V436h-74v44h192v-44h-74v-80.49c23.69-5 50.13-17.2 72.14-33.86 30-22.7 44.75-50.54 50.19-79.83 18.74-6.11 39.58-18.81 52.91-37.21C470.5 180.79 480 150 480 118V80zM94.4 178.8c-10.68-14.68-17.17-34.4-18.24-54.8H112v67.37c-3.94-1.14-12.92-6.12-17.6-12.57zm323.2 0c-4.6 6.61-11.6 12.58-17.6 12.58 0-22.4 0-46.29-.05-67.38h35.9c-1.08 20.4-7.85 39.9-18.25 54.8z"/></svg>
+                <h3>Artist</h3>
+            </div>
+            <div class="achievement" id="ach-pipes">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 512 512"><path d="M399.9 80V32H112v48H32v38c0 32 9.5 62.79 26.76 86.61 13.33 18.4 34.17 31.1 52.91 37.21 5.44 29.29 20.2 57.13 50.19 79.83 22 16.66 48.45 28.87 72.14 33.86V436h-74v44h192v-44h-74v-80.49c23.69-5 50.13-17.2 72.14-33.86 30-22.7 44.75-50.54 50.19-79.83 18.74-6.11 39.58-18.81 52.91-37.21C470.5 180.79 480 150 480 118V80zM94.4 178.8c-10.68-14.68-17.17-34.4-18.24-54.8H112v67.37c-3.94-1.14-12.92-6.12-17.6-12.57zm323.2 0c-4.6 6.61-11.6 12.58-17.6 12.58 0-22.4 0-46.29-.05-67.38h35.9c-1.08 20.4-7.85 39.9-18.25 54.8z"/></svg>
+                <h3>Screensaver</h3>
+            </div>
+        </div>
     </body>
 </html>

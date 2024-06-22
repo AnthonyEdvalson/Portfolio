@@ -674,6 +674,40 @@ footer {
     left: 20px;
 }
 
+.achievement-panel {
+    /* display: flex; */
+    display: none;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 1em;
+}
+
+.achievement-panel .achievement {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5em;
+    flex-grow: 1;
+}
+
+.achievement .icon {
+    font-size: 5em;
+    fill: var(--base-secondary);
+    stroke: none;
+}
+
+.achievement h3 {
+    color: var(--text-subtle);
+}
+
+.achievement.unlocked .icon {
+    fill: var(--accent);
+}
+
+.achievement.unlocked h3 {
+    color: var(--text);
+}
+
 #screensaver-canvas-container {
   position: fixed;
   top: 0;
