@@ -23,11 +23,22 @@
         <meta name="theme-color" content="#f6f8fa" id="theme-color">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-M50JEYPFZE"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+    
+            gtag('config', 'G-M50JEYPFZE');
+        </script> 
+
         <link rel="stylesheet" href="site.css">
         <link rel="icon" href="favicon/fav-black.png" type="image/png" id="favicon">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@200..1000&display=swap" rel="stylesheet">  
+        <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@200..1000&display=swap" rel="stylesheet">
+
         <script>
             window.onload = function() {
                 let name = new URLSearchParams(window.location.search).get("hello");
@@ -79,15 +90,6 @@
             });
         </script>
     </head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-M50JEYPFZE"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'G-M50JEYPFZE');
-    </script>
     <body>
         <div id="screensaver-canvas-container" style="display: none;">
             <canvas id="screensaver-canvas-webgl"></canvas>
