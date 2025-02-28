@@ -532,11 +532,12 @@
                     subfooter.innerText = "";
                 }
                 else if (i >= msgs.length) {
-                    // You can probably guess what this does
                     if (leaving) {
                         return;
                     }
                     leaving = true; // Prevents the page from redirecting multiple times
+                    
+                    // You can probably guess what this does
                     window.location.href = atob("aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==");
                 }
                 else {
