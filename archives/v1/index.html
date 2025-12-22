@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html class="black" lang="en">
+    <!--
+
+         _      _     _                            _
+        | |    | |___| | ___ ___  _ __ ___   ___  | | 
+        | | /\ | | _ \ |/ __/ _ \| '_ ` _ \ / _ \ | |
+         \ V  V /  __/ | (_| (_) | | | | | |  __/ |_|
+          \_/\_/ \___|_|\___\___/|_| |_| |_|\___| (_)
+
+        I've hidden a few easter eggs on the site, let me know if you find them all!
+
+        Stay awesome :)
+
+    -->
+    <head>
+        <meta charset="UTF-8">
+        <title>Tony Edvalson</title>
+        <meta name="description" content="Tony Edvalson is a user-oriented full-stack engineer specializing in ML & data analysis.">
+        <meta name="author" content="Tony Edvalson">
+        <meta name="copyright" content="Tony Edvalson">
+        <meta name="keywords" content="Tony Edvalson, software engineer, machine learning, data engineering, full-stack, web development">
+        <meta name="theme-color" content="#f6f8fa" id="theme-color">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-M50JEYPFZE"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+    
+            gtag('config', 'G-M50JEYPFZE');
+        </script> 
+
+        <link rel="stylesheet" href="site.css">
+        <link rel="icon" href="favicon/fav-black.png" type="image/png" id="favicon">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+        
+        <script>
+            window.onload = function() {
+                let name = new URLSearchParams(window.location.search).get("hello");
+                if (name) {
+                    const hello = document.getElementById('hello');
+                    hello.innerText = `Hello, ${name}!`;
+                }
+
+                // Gotta protect my email from those pesky bots
+                let parts = [
+                    "dG9ueWVkdmF",
+                    "sc29uQGdtYW",
+                    "lsLmNvbQ=="
+                ];
+                let value = atob(parts.join(''));
+                let e = document.getElementsByClassName("em");
+                for (let i = 0; i < e.length; i++) {
+                    e[i].innerText = value;
+                    e[i].href = `mailto:${value}`;
+                    // e[i].addEventListener("click", () => {
+                    //     navigator.clipboard.writeText(value);
+                    // });
+                }
+            }
+        
+            function toggleSettings() {
+                let settings = document.getElementById("settings-panel");
+                if (settings.className === "settings-panel") {
+                    settings.className = "settings-panel open";
+                }
+                else {
+                    settings.className = "settings-panel";
+                }
+            }
+
+            function setTheme(themeName) {
+                if (themeName !== "rainbow") {
+                    localStorage.setItem('theme', themeName);
+                }
+                document.documentElement.className = themeName;
+                document.getElementById('favicon').href = `favicon/fav-${themeName}.png`;
+                document.getElementById('theme-color').content = getComputedStyle(document.documentElement).getPropertyValue("--base");
+            }
+
+            window.addEventListener('load', () => {
+                let theme = localStorage.getItem('theme') || "black";
+                setTheme(theme);
+            });
+        </script>
+    </head>
+    <body>
+        <div id="screensaver-canvas-container" style="display: none;">
+            <canvas id="screensaver-canvas-webgl"></canvas>
+            <canvas id="screensaver-canvas-2d" style="pointer-events: none"></canvas>
+        </div>
+        <div class="topbar">
+            <div class="settings-panel" id="settings-panel">
+                <div class="settings" onclick="toggleSettings()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon rainbow-hide" viewBox="0 0 512 512"><title>Settings</title><path d="M256 176a80 80 0 1080 80 80.24 80.24 0 00-80-80zm172.72 80a165.53 165.53 0 01-1.64 22.34l48.69 38.12a11.59 11.59 0 012.63 14.78l-46.06 79.52a11.64 11.64 0 01-14.14 4.93l-57.25-23a176.56 176.56 0 01-38.82 22.67l-8.56 60.78a11.93 11.93 0 01-11.51 9.86h-92.12a12 12 0 01-11.51-9.53l-8.56-60.78A169.3 169.3 0 01151.05 393L93.8 416a11.64 11.64 0 01-14.14-4.92L33.6 331.57a11.59 11.59 0 012.63-14.78l48.69-38.12A174.58 174.58 0 0183.28 256a165.53 165.53 0 011.64-22.34l-48.69-38.12a11.59 11.59 0 01-2.63-14.78l46.06-79.52a11.64 11.64 0 0114.14-4.93l57.25 23a176.56 176.56 0 0138.82-22.67l8.56-60.78A11.93 11.93 0 01209.94 26h92.12a12 12 0 0111.51 9.53l8.56 60.78A169.3 169.3 0 01361 119l57.2-23a11.64 11.64 0 0114.14 4.92l46.06 79.52a11.59 11.59 0 01-2.63 14.78l-48.69 38.12a174.58 174.58 0 011.64 22.66z"></path></svg>
+                    <img class="rainbow-show" src="untitlerd.gif" alt="setings" />
+                </div>
+                <div class="settings-panel-themes">
+                    <div class="theme black" onclick="setTheme('black')"></div>
+                    <div class="theme dark" onclick="setTheme('dark')"></div>
+                    <div class="theme light" onclick="setTheme('light')"></div>
+                    <div class="theme rainbow" onclick="setTheme('rainbow')"></div>
+                </div>
+            </div>
+        </div>
+        <div class="grid">
+            <div class="grid-block">
+
+            </div>
+        </div>
+        <div class="container">
+            <header class="greet">
+                <div class="greet-container">
+                    <h1 class="slide delay-200 greet-hello" id="hello">
+                        Tony Edvalson
+                    </h2>
+                    <div class="slide delay-400">
+                        <h2 class="rainbow-hide hero-text">
+                            Hello!
+                        </h2>
+                        <h2 class="rainbow-hide hero-text">
+                            I'm a product-oriented software engineer specializing in AI agents & data engineering.
+                        </h2>
+                        <span class="rainbow-show hero-text" data-nosnippet>
+                            i'm tony edvalson,<br/>and graphic design is my passion.
+                        </span>
+                    </div>
+                    <h2 class="greet-contact slide delay-600">
+                        <div class="greet-contact-item">
+                            <a class="em"></a>
+                        </div>
+                        <div class="greet-contact-item">
+                            <a href="https://www.linkedin.com/in/tonyedvalson/" target="_blank">linkedin.com/in/tonyedvalson</a>
+                        </div>
+                    </h2>
+                    <img src="passion.webp" class="passion-cat rainbow-show" alt="Graphic design is my passion" />
+                    <div class="rainbow-hide shape"></div> 
+                </div>
+            </header>
+            <div class="section">
+                <div class="section-title">
+                    <h2>Background</h2>
+                </div>
+                <div class="section-content">
+                    <p>
+                        I currently work at <a href="https://asana.com" target="_blank">Asana</a> and build agent tools for enterprise customers.
+                    </p>
+                    <p>
+                        After devloping software professionally for 7 years, I've taken an interest in optimization and product development. My best work uses data science and ML to make sense of complex datasets, and I have experience doing so in both <a href="https://google.com">established tech giants</a> and <a href="https://www.pickuppatrol.net/" target="_blank">companies I've founded</a>.
+                    </p>
+                    <p>
+                        Outside of work, I love to tinker with side projects, like experimenting with generative music systems and creative writing. I competitively trade prediction markets on <a href="https://manifold.markets/">Manifold</a>, where I'm ranked in the top 25 users. And to relax I love to mess around in sandbox video games like Factorio and Minecraft.
+                    </p>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">
+                    <h2>Experience</h2>
+                </div>
+                <div class="section-content">
+                    <ul class="timeline">
+                        <li>
+                            <div class="timeline-content">
+                                <div class="heading">
+                                    <a href="https://asana.com/product/ai" target="_blank">
+                                        <h3>
+                                            Asana<span class="title-sep"></span>SWE
+                                            <svg class="icon arrow" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M1 9L9 1M9 1V8M9 1H2" />
+                                            </svg>
+                                        </h3>
+                                    </a>
+                                    <div class="date">
+                                        2024 &ndash; Present
+                                    </div>
+                                </div>
+                                <p>
+                                    I'm currently on a small team that is building AI Studio, Asana's second product, a no-code agentic platform. Together we made a product and coordinated with the rest of the company to build a GTM strategy and train sales agents.
+                                    I wear many hats, but as the designated LLM whisperer I do a lot of work with Anthropic and OpenAI to integrate their products in AI Studio, evaluate model performance, and optimize prompting.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="timeline-content">
+                                <div class="heading">
+                                    <a href="https://play.google.com/store/apps" target="_blank">
+                                        <h3>
+                                            Google Play<span class="title-sep"></span>SWE III
+                                            <svg class="icon arrow" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M1 9L9 1M9 1V8M9 1H2" />
+                                            </svg>
+                                        </h3>
+                                    </a>
+                                    <div class="date">
+                                        2021 &ndash; 2024
+                                    </div>
+                                </div>
+                                <p>
+                                    I helped build a system to allow mobile apps to be used before the download completes. Doing this required processing petabytes of data daily and some machine learning to dynamically figure out the order the files should be downloaded, and figure out what files a user needed to download next.
+                                    I also helped improve testing infrastructure and worked with legal to keep our systems compliant with DMA.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="timeline-content">
+                                <div class="heading">
+                                    <a href="https://www.ibm.com/" target="_blank">
+                                        <h3>
+                                            IBM<span class="title-sep"></span>Intern
+                                            <svg class="icon arrow" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M1 9L9 1M9 1V8M9 1H2" />
+                                            </svg>
+                                        </h3>
+                                    </a>
+                                    <div class="date">
+                                        Jun &ndash; Aug 2021
+                                    </div>
+                                </div>
+                                <p>
+                                    Researched new deep learning models that more accurately predicted the risk of extreme weather events months in advance.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="timeline-content">
+                                <div class="heading">
+                                    <a href="https://www.pickuppatrol.net/" target="_blank">
+                                        <h3>
+                                            PickUp Patrol<span class="title-sep"></span>Founder
+                                            <svg class="icon arrow" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M1 9L9 1M9 1V8M9 1H2" />
+                                            </svg>
+                                        </h3>
+                                    </a>
+                                    <div class="date">
+                                        2014 &ndash; 2021
+                                    </div>
+                                </div>
+                                <p>
+                                    Founded an industry leading school dismissal system. We support over 700 schools and 500,000 users internationally. Led product design, sales, gave investor pitches, and grew the company into a profitable SaaS business.
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                    <!--a href="tony-edvalson-resume.pdf" class="button" target="_blank">View Resume</a-->
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">
+                    <h2>Projects</h2>
+                </div>
+                <div class="section-content">
+                    <!--div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <a href="https://github.com/casesandberg/play-money" target="_blank">
+                                    <h3>
+                                        Manifork<span class="title-sep"></span>Recreational Finance Site
+                                        <svg class="icon arrow" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 9L9 1M9 1V8M9 1H2" />
+                                        </svg>
+                                    </h3>
+                                </a>
+                                <div class="date">2024</div>
+                            </div>
+                            <p>
+                                Manifork is an in-development platform for exploring the world of finance without the risk of losing real money. Users can bet, trade, and profit in a fully simulated economy.
+                            </p>
+                            <p>
+                                I'm one of the lead contributors to the project, doing full stack development and directing the product.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Finance</span>
+                                <span class="tag">Economics</span>
+                                <span class="tag">JS</span>
+                                <span class="tag">Next.js</span>
+                                <span class="tag">Tailwind</span>
+                            </div>
+                        </div>
+                    </div-->
+                    <div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <h3>Apollo<span class="title-sep"></span>Generative Music</h3>
+                                <div class="date">2024</div>
+                            </div>
+                            <p>
+                                Apollo uses ML and signal processing techniques to generate music. It utilizes variational autoencoders, customized ResNet blocks, and specialized loss functions to generate music within a latent representation.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Generative AI</span>
+                                <span class="tag">VAEs</span>
+                                <span class="tag">Music Generation</span>
+                                <span class="tag">Tensorflow</span>
+                                <span class="tag">Pandas</span>
+                                <span class="tag">Numpy</span>
+                                <span class="tag">Signal Processing</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <h3>Bolt<span class="title-sep"></span>LLM Web Development</h3>
+                                <div class="date">2023</div>
+                            </div>
+                            <p>
+                                Cursor before it was cool. Bolt is a coding assistant that allows users to develop websites in plain English. It can edit, correct errors, and implement complex interactions from scratch, like modals, shopping carts, and checkout functionality.
+                            </p>
+                            <p>
+                                My favorite part about it is a system for optimizing text in the LLM's context. Since the amount of code is much larger than the context size, I developed a system of iterative summarization based on information theory. Files less relevant to the current task are compressed so it can maximize the information available. Then a bin packing system figures out which summarized versions should be used to maximize the information available to the LLM.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">LLMs</span>
+                                <span class="tag">RAG</span>
+                                <span class="tag">Prompt Engineering</span>
+                                <span class="tag">GPT-4</span>
+                                <span class="tag">LangChain</span>
+                                <span class="tag">JS</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <a href="https://github.com/AnthonyEdvalson/owl" target="_blank">
+                                    <h3>
+                                        Owl<span class="title-sep"></span>Programming Language
+                                        <svg class="icon arrow" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 9L9 1M9 1V8M9 1H2" />
+                                        </svg>
+                                    </h3>
+                                </a>
+                                <div class="date">2023</div>
+                            </div>
+                            <p>
+                                Owl is a programming language I made. It's an interpreted language with a many powerful features that are designed to make code that is surprisingly clean and compact.
+                            </p>
+                            <p>
+                                A past version of this site was hosted on a server written entirely in Owl, but since it's not a standard language, the hosting was too expensive to maintain :'&#40;
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Go</span>
+                                <span class="tag">Programming Languages</span>
+                                <span class="tag">Interpreters</span>
+                                <span class="tag">Compilers</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <a href="https://github.com/AnthonyEdvalson/redditmap?tab=readme-ov-file" target="_blank">
+                                    <h3>
+                                        Reddit Map<span class="title-sep"></span>Reddit Visualizer
+                                        <svg class="icon arrow" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 9L9 1M9 1V8M9 1H2" />
+                                        </svg>
+                                    </h3>
+                                </a>
+                                <div class="date">2021</div>
+                            </div>
+                            <p>
+                                In this project I visualized the relatedness of subreddits by analyzing the comments and posts of users. I used D3.js to create a force-directed graph that showed the connections between related subreddits.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Reddit</span>
+                                <span class="tag">Data Visualization</span>
+                                <span class="tag">D3.js</span>
+                                <span class="tag">Python</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <h3>FMIPS<span class="title-sep"></span>Factorio MIPS Processor</h3>
+                                <div class="date">2020</div>
+                            </div>
+                            <p>
+                                I built a fully compliant processor in the video game Factorio that can execute MIPS assembly at a blazing 2 instructions per second. I was able to execute arbitrary C programs on the processor by writing a script that converted C to MIPS assembly, and automatically wrote the assembly to the computer's memory.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Factorio</span>
+                                <span class="tag">MIPS</span>
+                                <span class="tag">Assembly</span>
+                                <span class="tag">Computer Architecture</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-content">
+                            <div class="heading">
+                                <a href="https://github.com/AnthonyEdvalson/MCAlloy" target="_blank">
+                                    <h3>
+                                        MCAlloy<span class="title-sep"></span>Run Python in Minecraft
+                                        <svg class="icon arrow" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 9L9 1M9 1V8M9 1H2" />
+                                        </svg>
+                                    </h3>
+                                </a>
+                                <div class="date">2019</div>
+                            </div>
+                            <p>
+                                MCAlloy is a tool that allows python code to be executed in Mincraft using datapacks. A simple python interpreter is able to execute arbitrary python scripts, making it much easier to write complex commands in Minecraft.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Minecraft</span>
+                                <span class="tag">Python</span>
+                                <span class="tag">Transpilers</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="section">
+                <div class="cta">
+                    <h2>Get in Touch</h2>
+                    <p>I'm always open to new opportunities, talking about interesting projects, or just to chat!</p>
+                    <p>You can find me at <a class="em"></a>.</p>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <div class="footer-content">
+                <div class="footer-info">
+                    <span>Site and styes all created by me. No frameworks, no fnord, no templates. Source code is on <a href="https://github.com/AnthonyEdvalson/Portfolio" target="_blank">GitHub</a>.</span>
+                </div>
+            </div> 
+            <div class="subfooter">
+                <span id="subfooter-msg"></span>
+            </div>    
+        </footer>
+        <div class="background-glass">
+            <div class="rainbow-hide shape shape2"></div> 
+        </div>
+        <!-- Miscellenous scripts, the stuff down here is for things that shouldn't block the rendering of the page -->
+        <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Anton&display=swap" rel="stylesheet">
+        <script>
+            console.log("Yahaha! You found me! 🌱")
+        </script>
+        <script>
+            // Populate the grid
+            const GRID_DATA = [
+                {
+                    id: 'hero',
+                    span: 2,
+                    bg: 'bg-neutral-900',
+                    expandable: false,
+                    code: 'USR.01',
+                    content: <div className="flex items-center justify-between h-full">
+                        <div><h1 className="text-2xl font-bold font-mono">TONY EDVALSON</h1>
+                        <p className="text-white/50 text-sm font-mono">I build things</p></div>
+                    </div>
+                },
+
+                { id: 'deepslate', span: 'col-span-2 row-span-2', bg: 'bg-orange-500', accent: true, expandable: true, code: 'PRJ.01',
+                content: <><span className="text-xs uppercase tracking-wider text-black/60 font-mono">3D ML</span>
+                    <div className="mt-auto"><h3 className="text-2xl font-bold font-mono">DEEPSLATE</h3>
+                    <p className="text-sm text-black/60 font-mono">Transformers that build in three dimensions</p></div></> },
+
+                { id: 'atlas', span: 'col-span-1 row-span-2', bg: 'bg-neutral-900', expandable: true, code: 'PRJ.02',
+                content: <><span className="text-xs uppercase tracking-wider text-white/50 font-mono">Agent</span>
+                    <div className="mt-auto"><h3 className="text-xl font-bold font-mono">ATLAS</h3>
+                    <p className="text-xs text-white/50 font-mono">Personal AI with tool use</p></div></> },
+
+                { id: 'synth', span: 'col-span-1', bg: 'bg-neutral-800', expandable: true, code: 'PRJ.03',
+                content: <><span className="text-xs uppercase tracking-wider text-white/50 font-mono">Audio</span>
+                    <div className="mt-auto"><h3 className="text-lg font-bold font-mono">WEB SYNTH</h3>
+                    <p className="text-xs text-white/50 font-mono">TODO</p></div></> },
+
+                { id: 'terrain', span: 'col-span-1', bg: 'bg-neutral-900', expandable: true, code: 'PRJ.04',
+                content: <><span className="text-xs uppercase tracking-wider text-white/50 font-mono">Generative</span>
+                    <div className="mt-auto"><h3 className="text-lg font-bold font-mono">HEIGHTMAPS</h3>
+                    <p className="text-xs text-white/50 font-mono">TODO</p></div></> },
+
+                { id: 'crochet', span: 'col-span-1', bg: 'bg-orange-500', accent: true, expandable: true, code: 'CRF.01',
+                content: <><span className="text-xs uppercase tracking-wider text-black/60 font-mono">Craft</span>
+                    <div className="mt-auto"><h3 className="text-lg font-bold font-mono">CROCHET</h3>
+                    <p className="text-xs text-black/60 font-mono">TODO</p></div></> },
+
+                { id: 'worldbuild', span: 'col-span-2', bg: 'bg-neutral-800', expandable: true, code: 'WRT.01',
+                content: <><span className="text-xs uppercase tracking-wider text-white/50 font-mono">Writing</span>
+                    <div className="mt-auto"><h3 className="text-xl font-bold font-mono">WORLDBUILDING</h3>
+                    <p className="text-sm text-white/50 font-mono">Fantasy setting, languages, maps</p></div></> },
+
+                { id: 'blog', span: 'col-span-1', bg: 'bg-neutral-900', expandable: true, code: 'WRT.02',
+                content: <><span className="text-xs uppercase tracking-wider text-white/50 font-mono">Writing</span>
+                    <div className="mt-auto"><h3 className="text-lg font-bold font-mono">NOTES</h3>
+                    <p className="text-xs text-white/50 font-mono">TODO</p></div></> },
+
+                { id: 'demos', span: 'col-span-1', bg: 'bg-white', accent: true, expandable: true, code: 'INT.01',
+                content: <><span className="text-xs uppercase tracking-wider text-black/50 font-mono">Interactive</span>
+                    <div className="mt-auto"><h3 className="text-lg font-bold font-mono">DEMOS</h3>
+                    <p className="text-xs text-black/50 font-mono">TODO</p></div></> },
+
+                { id: 'about', span: 'col-span-2', bg: 'bg-neutral-900', expandable: true, code: 'SYS.00',
+                content: <div className="flex items-center justify-between h-full">
+                    <span className="font-medium font-mono">ABOUT / WORK HISTORY / CONTACT</span>
+                    <svg className="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                </div> }
+            ]
+        </script>
+        <script>
+            let screensaverTimeout = null;
+            let screensaverOn = false;
+            let screensaverScriptsLoaded = false;
+            const timeout = 10 * 60 * 1000;
+
+            window.addEventListener('mousemove', (e) => {
+                stopScreensaver();
+                if (e.altKey && e.ctrlKey && e.shiftKey) {
+                    // Debugging, press alt+ctrl+shift while moving the mouse a bit to start screensaver immediately
+                    startScreensaver();
+                    return;
+                }
+            });
+
+            window.addEventListener('keydown', (e) => {
+                stopScreensaver();
+            });
+
+            window.addEventListener('mousedown', () => {
+                stopScreensaver();
+            });
+
+            window.addEventListener('touchstart', () => {
+                stopScreensaver();
+            });
+
+            window.addEventListener('scroll', () => {
+                stopScreensaver();
+            });
+
+            async function startScreensaver() {
+                if (screensaverOn) {
+                    return;
+                }
+                screensaverOn = true;
+
+                if (!screensaverScriptsLoaded) {
+                    await loadScreensaverScripts();
+                    screensaverScriptsLoaded = true;
+                }
+
+                document.getElementById("screensaver-canvas-container").style.display = "block";
+                reset();
+                animate();
+            }
+
+            function stopScreensaver() {
+                clearTimeout(screensaverTimeout);
+                screensaverTimeout = setTimeout(function () {
+                    startScreensaver();
+                }, timeout);
+                if (!screensaverOn) {
+                    return;
+                }
+                screensaverOn = false;
+                
+                document.getElementById("screensaver-canvas-container").style.display = "none";
+                reset();
+            }
+
+            async function loadScreensaverScripts() {
+                let script = document.createElement('script');
+                script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/98/three.min.js";
+                script.integrity = "sha256-MbIcpOhIEGLabqntH1B7ZgE7a6V0TrocmKouz1npT1g=";
+                script.crossOrigin = "anonymous";
+                document.body.appendChild(script);
+
+                await new Promise((resolve) => {
+                    script.onload = resolve;
+                });
+
+                let screensaver = document.createElement('script');
+                screensaver.src = "screensaver.js";
+                document.body.appendChild(screensaver);
+
+                await new Promise((resolve) => {
+                    screensaver.onload = resolve;
+                });
+            }
+        </script>
+        <script>
+            /* Only works on iOS and other browsers that allow scrolling past the bottom of the page */
+            const msgs = [
+                "Cold",
+                "Warmer",
+                "Hot!",
+                "HOT HOT HOT!",
+            ]
+            let leaving = false;
+            window.addEventListener('scroll', () => {
+                let maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                let subfooter = document.getElementById('subfooter-msg');
+                let i = Math.floor((window.scrollY - maxScroll - 50) / 50);
+                if (i < 0) {
+                    subfooter.innerText = "";
+                }
+                else if (i >= msgs.length) {
+                    if (leaving) {
+                        return;
+                    }
+                    leaving = true; // Prevents the page from redirecting multiple times
+                    
+                    // You can probably guess what this does
+                    window.location.href = atob("aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==");
+                }
+                else {
+                    subfooter.innerText = msgs[i];
+                }
+            });
+        </script>
+    </body>
+</html>
