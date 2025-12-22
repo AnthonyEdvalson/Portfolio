@@ -431,5 +431,86 @@
                 }
             });
         </script>
+        <script>
+            let screensaverTimeout = null;
+            let screensaverOn = false;
+            let screensaverScriptsLoaded = false;
+            const timeout = 10 * 1000;
+
+            window.addEventListener('mousemove', (e) => {
+                stopScreensaver();
+                if (e.altKey && e.ctrlKey && e.shiftKey) {
+                    // Debugging, press alt+ctrl+shift while moving the mouse a bit to start screensaver immediately
+                    startScreensaver();
+                    return;
+                }
+            });
+
+            window.addEventListener('keydown', (e) => {
+                stopScreensaver();
+            });
+
+            window.addEventListener('mousedown', () => {
+                stopScreensaver();
+            });
+
+            window.addEventListener('touchstart', () => {
+                stopScreensaver();
+            });
+
+            window.addEventListener('scroll', () => {
+                stopScreensaver();
+            });
+
+            async function startScreensaver() {
+                if (screensaverOn) {
+                    return;
+                }
+                screensaverOn = true;
+
+                if (!screensaverScriptsLoaded) {
+                    await loadScreensaverScripts();
+                    screensaverScriptsLoaded = true;
+                }
+
+                document.getElementById("screensaver-canvas-container").style.display = "block";
+                reset();
+                animate();
+            }
+
+            function stopScreensaver() {
+                clearTimeout(screensaverTimeout);
+                screensaverTimeout = setTimeout(function () {
+                    startScreensaver();
+                }, timeout);
+                if (!screensaverOn) {
+                    return;
+                }
+                screensaverOn = false;
+                
+                document.getElementById("screensaver-canvas-container").style.display = "none";
+                reset();
+            }
+
+            async function loadScreensaverScripts() {
+                let script = document.createElement('script');
+                script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/98/three.min.js";
+                script.integrity = "sha256-MbIcpOhIEGLabqntH1B7ZgE7a6V0TrocmKouz1npT1g=";
+                script.crossOrigin = "anonymous";
+                document.body.appendChild(script);
+
+                await new Promise((resolve) => {
+                    script.onload = resolve;
+                });
+
+                let screensaver = document.createElement('script');
+                screensaver.src = "screensaver.js";
+                document.body.appendChild(screensaver);
+
+                await new Promise((resolve) => {
+                    screensaver.onload = resolve;
+                });
+            }
+        </script>
     </body>
 </html>
