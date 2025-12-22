@@ -111,7 +111,6 @@
             function renderItemMarkdown(markdown) {
                 const renderer = new marked.Renderer();
 
-                // Override the link method
                 renderer.link = ({href, title, text}) => {
                     let html = `<a href="${href}"`;
                     if (title) {
@@ -134,7 +133,6 @@
                     return html;
                 };
 
-                // Configure marked to use the custom renderer
                 marked.use({ renderer });
 
                 var bodyHtml;

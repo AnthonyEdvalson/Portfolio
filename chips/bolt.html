@@ -49,7 +49,6 @@
             transition: none;
         }
 
-        /* Component types - using portfolio palette */
         .component--header {
             background: #282828;
         }
@@ -92,9 +91,6 @@
     </div>
 
     <script>
-        // ============================================
-        // ANIMATION ENGINE
-        // ============================================
         const page = document.getElementById('page');
         const components = {};
         let isHovering = false;
@@ -102,15 +98,10 @@
         let animationTimeout = null;
 
         const config = {
-            keyframeDuration: 1400,  // ms between keyframes
-            transitionDuration: 500  // ms for CSS transitions (match CSS)
+            keyframeDuration: 1400,
+            transitionDuration: 500
         };
 
-        // ============================================
-        // KEYFRAMES
-        // Each keyframe is an array of component states
-        // { id, type, x, y, w, h } - all positions in %
-        // ============================================
         const keyframes = [
             // Empty page - just header appears
             [
@@ -248,11 +239,6 @@
             ],
         ];
 
-        // ============================================
-        // ENGINE FUNCTIONS
-        // ============================================
-
-        // Track which components are currently visible
         let visibleIds = new Set();
 
         function getOrCreateComponent(id, type) {
@@ -269,38 +255,32 @@
         function applyKeyframe(keyframe) {
             const activeIds = new Set(keyframe.map(c => c.id));
 
-            // Fade out components not in this keyframe
             for (const id in components) {
                 if (!activeIds.has(id)) {
                     components[id].el.classList.remove('visible');
                 }
             }
 
-            // Update components in this keyframe
             for (const c of keyframe) {
                 const comp = getOrCreateComponent(c.id, c.type);
                 const wasVisible = visibleIds.has(c.id);
 
-                // Update type if changed
                 if (comp.type !== c.type) {
                     comp.el.classList.remove(`component--${comp.type}`);
                     comp.el.classList.add(`component--${c.type}`);
                     comp.type = c.type;
                 }
 
-                // If component wasn't visible, set position instantly (no transition)
                 if (!wasVisible) {
                     comp.el.classList.add('no-transition');
                     comp.el.style.left = `${c.x}%`;
                     comp.el.style.top = `${c.y}%`;
                     comp.el.style.width = `${c.w}%`;
                     comp.el.style.height = `${c.h}%`;
-                    // Force reflow to apply instant position before enabling transitions
                     comp.el.offsetHeight;
                     comp.el.classList.remove('no-transition');
                     comp.el.classList.add('visible');
                 } else {
-                    // Component was visible - animate to new position
                     comp.el.style.left = `${c.x}%`;
                     comp.el.style.top = `${c.y}%`;
                     comp.el.style.width = `${c.w}%`;
@@ -309,7 +289,6 @@
                 }
             }
 
-            // Update visibility tracking
             visibleIds = activeIds;
         }
 
@@ -324,7 +303,6 @@
 
         function start() {
             if (animationTimeout) return;
-            // Immediately advance to next keyframe for responsive feel
             nextKeyframe();
         }
 
@@ -335,12 +313,10 @@
             }
         }
 
-        // Start at a visually interesting keyframe (side-by-side layout with button)
         const initialKeyframe = 8;
         currentKeyframe = initialKeyframe;
         applyKeyframe(keyframes[currentKeyframe]);
 
-        // Listen for hover messages from parent
         window.addEventListener('message', function(e) {
             if (!e.data) return;
             if (e.data.type === 'hover') {

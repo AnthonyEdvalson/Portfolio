@@ -77,7 +77,6 @@ function build() {
         return item;
     });
 
-    // Ensure deterministic order
     items.sort(function (a, b) {
         return a.order - b.order;
     });

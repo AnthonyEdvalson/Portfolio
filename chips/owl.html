@@ -96,12 +96,11 @@
             white-space: pre;
         }
 
-        /* Syntax highlighting - minimal palette */
         .token-keyword { color: #e85d04; }
         .token-number { color: #333; }
         .token-string { color: #e85d04; }
         .token-operator { color: #333; opacity: 0.5; }
-        .token-owl-operator { color: #e85d04; }  /* =>, |, :: */
+        .token-owl-operator { color: #e85d04; }
         .token-function { color: #e85d04; }
         .token-variable { color: #333; }
         .token-comment { color: #333; opacity: 0.4; }
@@ -109,20 +108,16 @@
 </head>
 <body>
     <div class="container" id="container">
-        <!-- Lines are generated dynamically -->
     </div>
 
     <script>
-    // ============================================
-    // CONFIGURATION - Easy to edit!
-    // ============================================
     const examples = [
         {
             input: [
                 "// pattern matching arguments",
-                "factorial = 0 => 1",
-                "          | n => n * f(n - 1)",
-                "factorial(4)"
+                "fact = 0 => 1",
+                "     | n => n * fact(n - 1)",
+                "fact(4)"
             ],
             output: "24"
         },
@@ -154,26 +149,24 @@
     ];
 
     const config = {
-        typeSpeed: 70,           // ms per character
-        pauseAfterType: 400,     // ms pause after typing completes
-        pauseAfterOutput: 1800,  // ms pause to read output
-        pauseBetween: 300,       // ms pause between examples
-        maxLines: 20,            // max lines to keep in history
+        typeSpeed: 70,
+        pauseAfterType: 400,
+        pauseAfterOutput: 1800,
+        pauseBetween: 300,
+        maxLines: 20,
     };
-    // ============================================
 
     const containerEl = document.getElementById('container');
 
     let isHovering = false;
     let currentExample = 0;
-    let currentLineIndex = 0;  // Index within current example's input lines
+    let currentLineIndex = 0;
     let charIndex = 0;
     let phase = 'typing';
     let timeoutId = null;
-    let currentLineEl = null;  // Current line being typed
+    let currentLineEl = null;
 
     function getInputLines(example) {
-        // Support both { code: "..." } and { input: ["...", "..."] }
         if (example.input) {
             return example.input;
         }
@@ -186,7 +179,7 @@
             { type: 'comment', regex: /^\/\/.*/ },
             { type: 'number', regex: /^\d+/ },
             { type: 'string', regex: /^"[^"]*"|^'[^']*'/ },
-            { type: 'owl-operator', regex: /^(=>|::|\|)/ },  // Owl-specific operators
+            { type: 'owl-operator', regex: /^(=>|::|\|)/ },
             { type: 'operator', regex: /^(\.\.\.|\+\+|--|[+\-*/%=<>!&,.\[\](){}])/ },
             { type: 'keyword', regex: /^(if|else|while|return|true|false|null)\b/ },
             { type: 'function', regex: /^[a-zA-Z_][a-zA-Z0-9_]*(?=\()/ },
@@ -287,7 +280,6 @@
 
         switch (phase) {
             case 'typing':
-                // Create a new line if needed
                 if (!currentLineEl) {
                     currentLineEl = createLine();
                     currentLineEl.cursor.classList.add('visible');
@@ -300,18 +292,15 @@
                     currentLineEl.code.innerHTML = renderCode(currentText.slice(0, charIndex));
                     timeoutId = setTimeout(tick, config.typeSpeed);
                 } else {
-                    // Done typing this line
                     currentLineEl.cursor.classList.remove('visible');
                     currentLineEl = null;
                     
                     if (currentLineIndex < inputLines.length - 1) {
-                        // More lines to type
                         currentLineIndex++;
                         charIndex = 0;
                         phase = 'typing';
                         timeoutId = setTimeout(tick, config.pauseAfterType);
                     } else {
-                        // All lines done, show output
                         phase = 'showOutput';
                         timeoutId = setTimeout(tick, config.pauseAfterType);
                     }
@@ -326,10 +315,8 @@
                 break;
 
             case 'pauseAfterOutput':
-                // Add blank line between examples
                 createBlankLine();
                 
-                // Move to next example
                 charIndex = 0;
                 currentLineIndex = 0;
                 currentExample = (currentExample + 1) % examples.length;
@@ -351,10 +338,8 @@
         }
     }
 
-    // Make startup message
     createOutputLine().output.textContent = "[[Owl 1.3 REPL]]";
 
-    // Listen for messages from parent (tile hover)
     window.addEventListener('message', function(e) {
         if (!e.data || e.data.type !== 'hover') return;
         if (e.data.value) {

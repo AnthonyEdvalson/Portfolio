@@ -14,18 +14,15 @@ Please direct all complaints to Nile the lobster, he's a good listener: 🦞
 }
 
 :root {
-    /* Base color palette */
     --color-blackest: #171717;
     --color-black: #282828;
     --color-white: #CCCCCC;
     --color-orange: #D05030;
     
-    /* Contextual colors (main page: dark mode) */
     --bg: var(--color-black);
     --fg: var(--color-white);
     --accent: var(--color-orange);
     
-    /* Code block background (changes per context) */
     --code-bg: var(--color-black);
 }
 
@@ -63,21 +60,6 @@ ul {
     list-style-type: square;
 }
 
-/* li {
-    padding-left: 0.5em;
-    text-indent: -1em;
-    position: relative;
-}
-
-li::before {
-    content: "";
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background-color: var(--fg);
-    transform: translate(-0.8em, calc(-50% + 0.85em));
-} */
-
 .grid-bg {
     position: fixed;
     inset: 0;
@@ -87,7 +69,6 @@ li::before {
     background-image: 
         linear-gradient(rgba(204, 204, 204, 0.5) 1px, transparent 1px),
         linear-gradient(90deg, rgba(204, 204, 204, 0.5) 1px, transparent 1px);
-    /* background-image: radial-gradient(circle, rgba(204, 204, 204, 0.5) 1px, transparent 1px); */
     background-size: 20px 20px;
 }
 
@@ -128,7 +109,6 @@ li::before {
     cursor: default;
 }
 
-/* Tile color variants - override contextual variables */
 .tile--black {
     --bg: var(--color-black);
     --fg: var(--color-white);
@@ -264,7 +244,6 @@ li::before {
     color: var(--bg);
 }
 
-/* Modal */
 .modal {
     position: fixed;
     inset: 0;
@@ -279,7 +258,6 @@ li::before {
     display: none;
 }
 
-/* Modal color variants - override contextual variables */
 .modal--black {
     --bg: var(--color-black);
     --fg: var(--color-white);
@@ -301,24 +279,20 @@ li::before {
     --accent: var(--color-orange);
 }
 
-/* Phantom element for expand animation */
 .modal__phantom {
     position: fixed;
     z-index: 0;
     background: var(--bg);
 }
 
-/* Modal inherits fg color */
 .modal {
     color: var(--fg);
 }
 
-/* Background applied after expand animation */
 .modal--expanded {
     background: var(--bg);
 }
 
-/* Close button */
 .modal__close {
     position: fixed;
     top: 20px;
@@ -342,7 +316,6 @@ li::before {
     color: var(--bg);
 }
 
-/* Modal content container */
 .modal__content {
     position: relative;
     z-index: 1;
@@ -351,7 +324,6 @@ li::before {
     padding: 80px 24px 80px;
 }
 
-/* Modal header elements */
 .modal__code {
     position: absolute;
     top: 80px;
@@ -401,7 +373,6 @@ li::before {
     line-height: 1.5;
 }
 
-/* Modal markdown body */
 .modal__body {
     font-family: "IBM Plex Sans", system-ui, sans-serif;
     line-height: 1.7;

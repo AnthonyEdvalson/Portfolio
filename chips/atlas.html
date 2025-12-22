@@ -186,7 +186,6 @@
         </div>
     </div>
     <script>
-        // Mouse-driven tilt offsets (used only in the listening state)
         let mouseTiltX = 0;
         let mouseTiltY = 0;
 
@@ -202,7 +201,6 @@
             listening: {
                 tension: 120,
                 friction: 0.75,
-                // Base idle motion, plus a small nudge towards the mouse
                 cx: (t) => 5 * Math.pow(Math.sin(t / 1600), 1) - mouseTiltX * 2,
                 cy: (t) => -mouseTiltY * 2,
                 cz: (t) => 45,
@@ -226,7 +224,6 @@
         const containerEl = document.getElementById('container');
         const stateLabelEl = document.getElementById('stateLabel');
 
-        // Listen for messages from parent (tile hover)
         window.addEventListener('message', function(e) {
             if (!e.data) return;
             if (e.data.type === 'hover') {
@@ -238,8 +235,8 @@
                     atlasEl.classList.remove('atlas-attention');
                 }
             } else if (e.data.type === 'mousemove' && currentState === 'listening') {
-                const nx = (e.data.x - 0.5) * 2;  // -1..1
-                const ny = (e.data.y - 0.5) * 2;  // -1..1
+                const nx = (e.data.x - 0.5) * 2;
+                const ny = (e.data.y - 0.5) * 2;
                 const maxTilt = 8;
                 mouseTiltY = -nx * maxTilt;
                 mouseTiltX = ny * maxTilt;

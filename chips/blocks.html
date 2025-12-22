@@ -90,7 +90,6 @@
     </div>
 
     <script>
-        // Configuration
         const blockSizeVmin = 10;
         const dropDistanceVmin = 100;
         const staggerDelayMs = 50;
@@ -127,8 +126,6 @@
                 { x: -2, y: -1, z: 1 },
                 { x: -1, y: -1, z: -2 },
                 { x: -1, y: -1, z: 2 },
-                // { x: 0, y: -1, z: -2},
-                // { x: 0, y: -1, z: 2 },
                 { x: 1, y: -1, z: -2 },
                 { x: 1, y: -1, z: 2 },
                 { x: 2, y: -1, z: -1 },
@@ -140,8 +137,6 @@
                 { x: -2, y: 0, z: 1 },
                 { x: -1, y: 0, z: -2 },
                 { x: -1, y: 0, z: 2 },
-                // { x: 0, y: 0, z: -2},
-                // { x: 0, y: 0, z: 2 },
                 { x: 1, y: 0, z: -2 },
                 { x: 1, y: 0, z: 2 },
                 { x: 2, y: 0, z: -1 },
@@ -311,7 +306,6 @@
             }
         }
 
-        // Listen for messages from parent (tile hover)
         window.addEventListener('message', function(e) {
             if (!e.data || e.data.type !== 'hover') return;
             if (e.data.value) {
