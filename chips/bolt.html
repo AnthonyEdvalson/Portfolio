@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bolt Builder</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8%;
+        }
+
+        .page {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            outline: 1px solid #282828
+        }
+
+        .component {
+            position: absolute;
+            transition: opacity 0.4s ease, left 0.5s cubic-bezier(0.4, 0, 0.2, 1), top 0.5s cubic-bezier(0.4, 0, 0.2, 1), width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+        }
+
+        .component.visible {
+            opacity: 1;
+        }
+
+        .component.no-transition {
+            transition: none;
+        }
+
+        /* Component types - using portfolio palette */
+        .component--header {
+            background: #282828;
+        }
+
+        .component--text {
+            background: repeating-linear-gradient(
+                to bottom,
+                #888 0px,
+                #888 2px,
+                transparent 2px,
+                transparent 5px
+            );
+            background-size: 100% 5px;
+        }
+
+        .component--image {
+            background: #999;
+        }
+
+        .component--button {
+            background: #D05030;
+        }
+
+        .component--card {
+            background: #b8b8b8;
+        }
+
+        .component--nav {
+            background: #383838;
+        }
+
+        .component--footer {
+            background: #282828;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page" id="page"></div>
+    </div>
+
+    <script>
+        // ============================================
+        // ANIMATION ENGINE
+        // ============================================
+        const page = document.getElementById('page');
+        const components = {};
+        let isHovering = false;
+        let currentKeyframe = 0;
+        let animationTimeout = null;
+
+        const config = {
+            keyframeDuration: 1400,  // ms between keyframes
+            transitionDuration: 500  // ms for CSS transitions (match CSS)
+        };
+
+        // ============================================
+        // KEYFRAMES
+        // Each keyframe is an array of component states
+        // { id, type, x, y, w, h } - all positions in %
+        // ============================================
+        const keyframes = [
+            // Empty page - just header appears
+            [
+                { id: 'header', type: 'header', x: 0, y: 0, w: 100, h: 7 },
+            ],
+
+            // Add hero image
+            [
+                { id: 'header', type: 'header', x: 0, y: 0, w: 100, h: 7 },
+                { id: 'hero', type: 'image', x: 5, y: 12, w: 90, h: 35 },
+            ],
+
+            // Add title text
+            [
+                { id: 'header', type: 'header', x: 0, y: 0, w: 100, h: 7 },
+                { id: 'hero', type: 'image', x: 5, y: 12, w: 90, h: 35 },
+                { id: 'title', type: 'text', x: 5, y: 52, w: 55, h: 10 },
+            ],
+
+            // Add CTA button
+            [
+                { id: 'header', type: 'header', x: 0, y: 0, w: 100, h: 7 },
+                { id: 'hero', type: 'image', x: 5, y: 12, w: 90, h: 35 },
+                { id: 'title', type: 'text', x: 5, y: 52, w: 55, h: 10 },
+                { id: 'btn1', type: 'button', x: 5, y: 66, w: 22, h: 6 },
+            ],
+
+            // Rearrange to side-by-side layout
+            [
+                { id: 'header', type: 'header', x: 0, y: 0, w: 100, h: 7 },
+                { id: 'hero', type: 'image', x: 5, y: 12, w: 42, h: 32 },
+                { id: 'title', type: 'text', x: 52, y: 14, w: 43, h: 14 },
+                { id: 'btn1', type: 'button', x: 52, y: 34, w: 18, h: 6 },
+            ],
+
+            // Add card grid
+            [
+                { id: 'header', type: 'header', x: 0, y: 0, w: 100, h: 7 },
+                { id: 'hero', type: 'image', x: 5, y: 12, w: 42, h: 28 },
+                { id: 'title', type: 'text', x: 52, y: 14, w: 43, h: 12 },
+                { id: 'btn1', type: 'button', x: 52, y: 30, w: 18, h: 5 },
+                { id: 'card1', type: 'card', x: 5, y: 48, w: 28, h: 24 },
+                { id: 'card2', type: 'card', x: 36, y: 48, w: 28, h: 24 },
+                { id: 'card3', type: 'card', x: 67, y: 48, w: 28, h: 24 },
+            ],
+
+            // Add images inside cards
+            [
+                { id: 'header', type: 'header', x: 0, y: 0, w: 100, h: 7 },
+                { id: 'hero', type: 'image', x: 5, y: 12, w: 42, h: 28 },
+                { id: 'title', type: 'text', x: 52, y: 14, w: 43, h: 12 },
+                { id: 'btn1', type: 'button', x: 52, y: 30, w: 18, h: 5 },
+                { id: 'card1', type: 'card', x: 5, y: 48, w: 28, h: 24 },
+                { id: 'card2', type: 'card', x: 36, y: 48, w: 28, h: 24 },
+                { id: 'card3', type: 'card', x: 67, y: 48, w: 28, h: 24 },
+                { id: 'cimg1', type: 'image', x: 7, y: 50, w: 24, h: 11 },
+                { id: 'cimg2', type: 'image', x: 38, y: 50, w: 24, h: 11 },
+                { id: 'cimg3', type: 'image', x: 69, y: 50, w: 24, h: 11 },
+            ],
+
+            // Add text to cards
+            [
+                { id: 'header', type: 'header', x: 0, y: 0, w: 100, h: 7 },
+                { id: 'hero', type: 'image', x: 5, y: 12, w: 42, h: 28 },
+                { id: 'title', type: 'text', x: 52, y: 14, w: 43, h: 12 },
+                { id: 'btn1', type: 'button', x: 52, y: 30, w: 18, h: 5 },
+                { id: 'card1', type: 'card', x: 5, y: 48, w: 28, h: 24 },
+                { id: 'card2', type: 'card', x: 36, y: 48, w: 28, h: 24 },
+                { id: 'card3', type: 'card', x: 67, y: 48, w: 28, h: 24 },
+                { id: 'cimg1', type: 'image', x: 7, y: 50, w: 24, h: 11 },
+                { id: 'cimg2', type: 'image', x: 38, y: 50, w: 24, h: 11 },
+                { id: 'cimg3', type: 'image', x: 69, y: 50, w: 24, h: 11 },
+                { id: 'ctxt1', type: 'text', x: 7, y: 63, w: 24, h: 7 },
+                { id: 'ctxt2', type: 'text', x: 38, y: 63, w: 24, h: 7 },
+                { id: 'ctxt3', type: 'text', x: 69, y: 63, w: 24, h: 7 },
+            ],
+
+            // Simplify - remove middle card
+            [
+                { id: 'header', type: 'header', x: 0, y: 0, w: 100, h: 7 },
+                { id: 'hero', type: 'image', x: 5, y: 10, w: 90, h: 28 },
+                { id: 'title', type: 'text', x: 5, y: 42, w: 50, h: 10 },
+                { id: 'btn1', type: 'button', x: 5, y: 56, w: 20, h: 5 },
+                { id: 'card1', type: 'card', x: 5, y: 66, w: 43, h: 20 },
+                { id: 'card3', type: 'card', x: 52, y: 66, w: 43, h: 20 },
+                { id: 'cimg1', type: 'image', x: 8, y: 69, w: 16, h: 14 },
+                { id: 'cimg3', type: 'image', x: 55, y: 69, w: 16, h: 14 },
+                { id: 'ctxt1', type: 'text', x: 27, y: 70, w: 18, h: 12 },
+                { id: 'ctxt3', type: 'text', x: 74, y: 70, w: 18, h: 12 },
+                { id: 'footer', type: 'footer', x: 0, y: 93, w: 100, h: 7 },
+            ],
+
+            // Different layout - sidebar navigation
+            [
+                { id: 'header', type: 'header', x: 0, y: 0, w: 100, h: 7 },
+                { id: 'nav', type: 'nav', x: 0, y: 7, w: 18, h: 86 },
+                { id: 'hero', type: 'image', x: 22, y: 12, w: 73, h: 28 },
+                { id: 'title', type: 'text', x: 22, y: 44, w: 45, h: 10 },
+                { id: 'btn1', type: 'button', x: 22, y: 58, w: 16, h: 5 },
+                { id: 'card1', type: 'card', x: 22, y: 68, w: 35, h: 18 },
+                { id: 'card3', type: 'card', x: 60, y: 68, w: 35, h: 18 },
+                { id: 'footer', type: 'footer', x: 0, y: 93, w: 100, h: 7 },
+            ],
+
+            // Content heavy - lots of text
+            [
+                { id: 'header', type: 'header', x: 0, y: 0, w: 100, h: 7 },
+                { id: 'nav', type: 'nav', x: 0, y: 7, w: 18, h: 86 },
+                { id: 'title', type: 'text', x: 22, y: 12, w: 55, h: 8 },
+                { id: 'hero', type: 'image', x: 22, y: 24, w: 35, h: 22 },
+                { id: 'txt1', type: 'text', x: 60, y: 24, w: 35, h: 22 },
+                { id: 'txt2', type: 'text', x: 22, y: 50, w: 73, h: 14 },
+                { id: 'txt3', type: 'text', x: 22, y: 68, w: 73, h: 14 },
+                { id: 'footer', type: 'footer', x: 0, y: 93, w: 100, h: 7 },
+            ],
+
+            // Gallery layout
+            [
+                { id: 'header', type: 'header', x: 0, y: 0, w: 100, h: 7 },
+                { id: 'title', type: 'text', x: 5, y: 12, w: 40, h: 8 },
+                { id: 'img1', type: 'image', x: 5, y: 24, w: 30, h: 28 },
+                { id: 'img2', type: 'image', x: 37, y: 24, w: 30, h: 28 },
+                { id: 'img3', type: 'image', x: 69, y: 24, w: 26, h: 28 },
+                { id: 'img4', type: 'image', x: 5, y: 55, w: 45, h: 22 },
+                { id: 'img5', type: 'image', x: 52, y: 55, w: 43, h: 22 },
+                { id: 'footer', type: 'footer', x: 0, y: 93, w: 100, h: 7 },
+            ],
+
+            // Minimal landing
+            [
+                { id: 'header', type: 'header', x: 0, y: 0, w: 100, h: 7 },
+                { id: 'title', type: 'text', x: 15, y: 30, w: 70, h: 12 },
+                { id: 'btn1', type: 'button', x: 35, y: 50, w: 30, h: 7 },
+                { id: 'footer', type: 'footer', x: 0, y: 93, w: 100, h: 7 },
+            ],
+        ];
+
+        // ============================================
+        // ENGINE FUNCTIONS
+        // ============================================
+
+        // Track which components are currently visible
+        let visibleIds = new Set();
+
+        function getOrCreateComponent(id, type) {
+            if (!components[id]) {
+                const el = document.createElement('div');
+                el.className = `component component--${type}`;
+                el.dataset.id = id;
+                page.appendChild(el);
+                components[id] = { el, type };
+            }
+            return components[id];
+        }
+
+        function applyKeyframe(keyframe) {
+            const activeIds = new Set(keyframe.map(c => c.id));
+
+            // Fade out components not in this keyframe
+            for (const id in components) {
+                if (!activeIds.has(id)) {
+                    components[id].el.classList.remove('visible');
+                }
+            }
+
+            // Update components in this keyframe
+            for (const c of keyframe) {
+                const comp = getOrCreateComponent(c.id, c.type);
+                const wasVisible = visibleIds.has(c.id);
+
+                // Update type if changed
+                if (comp.type !== c.type) {
+                    comp.el.classList.remove(`component--${comp.type}`);
+                    comp.el.classList.add(`component--${c.type}`);
+                    comp.type = c.type;
+                }
+
+                // If component wasn't visible, set position instantly (no transition)
+                if (!wasVisible) {
+                    comp.el.classList.add('no-transition');
+                    comp.el.style.left = `${c.x}%`;
+                    comp.el.style.top = `${c.y}%`;
+                    comp.el.style.width = `${c.w}%`;
+                    comp.el.style.height = `${c.h}%`;
+                    // Force reflow to apply instant position before enabling transitions
+                    comp.el.offsetHeight;
+                    comp.el.classList.remove('no-transition');
+                    comp.el.classList.add('visible');
+                } else {
+                    // Component was visible - animate to new position
+                    comp.el.style.left = `${c.x}%`;
+                    comp.el.style.top = `${c.y}%`;
+                    comp.el.style.width = `${c.w}%`;
+                    comp.el.style.height = `${c.h}%`;
+                    comp.el.classList.add('visible');
+                }
+            }
+
+            // Update visibility tracking
+            visibleIds = activeIds;
+        }
+
+        function nextKeyframe() {
+            if (!isHovering) return;
+
+            currentKeyframe = (currentKeyframe + 1) % keyframes.length;
+            applyKeyframe(keyframes[currentKeyframe]);
+
+            animationTimeout = setTimeout(nextKeyframe, config.keyframeDuration);
+        }
+
+        function start() {
+            if (animationTimeout) return;
+            // Immediately advance to next keyframe for responsive feel
+            nextKeyframe();
+        }
+
+        function pause() {
+            if (animationTimeout) {
+                clearTimeout(animationTimeout);
+                animationTimeout = null;
+            }
+        }
+
+        // Start at a visually interesting keyframe (side-by-side layout with button)
+        const initialKeyframe = 8;
+        currentKeyframe = initialKeyframe;
+        applyKeyframe(keyframes[currentKeyframe]);
+
+        // Listen for hover messages from parent
+        window.addEventListener('message', function(e) {
+            if (!e.data) return;
+            if (e.data.type === 'hover') {
+                if (e.data.value) {
+                    isHovering = true;
+                    start();
+                } else {
+                    isHovering = false;
+                    pause();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

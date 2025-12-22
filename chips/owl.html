@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owl REPL</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-end;
+            padding: 4vw;
+            overflow: hidden;
+        }
+
+        .blank-line {
+            height: 1.6em;
+            font-size: 4vw;
+        }
+
+        .repl-line {
+            display: flex;
+            align-items: center;
+            font-size: 4vw;
+            line-height: 1.6;
+            min-height: 1.6em;
+        }
+
+        .prompt {
+            color: #888;
+            margin-right: 0.5em;
+            user-select: none;
+        }
+
+        .code {
+            color: #333;
+            white-space: pre;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 0.6em;
+            height: 1.1em;
+            background-color: #333;
+            margin-left: 1px;
+            vertical-align: text-bottom;
+            opacity: 0;
+        }
+
+        .cursor.visible {
+            opacity: 1;
+        }
+
+        body.hovering .cursor.visible {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .output-line {
+            display: flex;
+            align-items: center;
+            font-size: 4vw;
+            line-height: 1.6;
+            min-height: 1.6em;
+        }
+
+        .output {
+            color: #666;
+            white-space: pre;
+        }
+
+        /* Syntax highlighting - minimal palette */
+        .token-keyword { color: #e85d04; }
+        .token-number { color: #333; }
+        .token-string { color: #e85d04; }
+        .token-operator { color: #333; opacity: 0.5; }
+        .token-owl-operator { color: #e85d04; }  /* =>, |, :: */
+        .token-function { color: #e85d04; }
+        .token-variable { color: #333; }
+        .token-comment { color: #333; opacity: 0.4; }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <!-- Lines are generated dynamically -->
+    </div>
+
+    <script>
+    // ============================================
+    // CONFIGURATION - Easy to edit!
+    // ============================================
+    const examples = [
+        {
+            input: [
+                "// pattern matching arguments",
+                "factorial = 0 => 1",
+                "          | n => n * f(n - 1)",
+                "factorial(4)"
+            ],
+            output: "24"
+        },
+        { input:
+            [
+                "// destructuring assignments",
+                "_, ...rest = 5, 5, 5",
+                "rest.Sum()",
+            ],
+            output: "10"
+        },
+        { 
+            input: [
+                "// operator overrides",
+                "x = 10",
+                "x::add = (a, b) => a - b",
+                "x + 1",
+            ],
+            output: "9"
+        },
+        {
+            input: [
+                "// First class functions",
+                "plus2 = (x) => x + 2",
+                "[1, 2, 3].map(plus2)",
+            ],
+            output: "[3, 4, 5]"
+        },
+    ];
+
+    const config = {
+        typeSpeed: 70,           // ms per character
+        pauseAfterType: 400,     // ms pause after typing completes
+        pauseAfterOutput: 1800,  // ms pause to read output
+        pauseBetween: 300,       // ms pause between examples
+        maxLines: 20,            // max lines to keep in history
+    };
+    // ============================================
+
+    const containerEl = document.getElementById('container');
+
+    let isHovering = false;
+    let currentExample = 0;
+    let currentLineIndex = 0;  // Index within current example's input lines
+    let charIndex = 0;
+    let phase = 'typing';
+    let timeoutId = null;
+    let currentLineEl = null;  // Current line being typed
+
+    function getInputLines(example) {
+        // Support both { code: "..." } and { input: ["...", "..."] }
+        if (example.input) {
+            return example.input;
+        }
+        return [example.code];
+    }
+
+    function tokenize(code) {
+        const tokens = [];
+        const patterns = [
+            { type: 'comment', regex: /^\/\/.*/ },
+            { type: 'number', regex: /^\d+/ },
+            { type: 'string', regex: /^"[^"]*"|^'[^']*'/ },
+            { type: 'owl-operator', regex: /^(=>|::|\|)/ },  // Owl-specific operators
+            { type: 'operator', regex: /^(\.\.\.|\+\+|--|[+\-*/%=<>!&,.\[\](){}])/ },
+            { type: 'keyword', regex: /^(if|else|while|return|true|false|null)\b/ },
+            { type: 'function', regex: /^[a-zA-Z_][a-zA-Z0-9_]*(?=\()/ },
+            { type: 'variable', regex: /^[a-zA-Z_][a-zA-Z0-9_]*/ },
+            { type: 'whitespace', regex: /^\s+/ },
+        ];
+
+        let remaining = code;
+        while (remaining.length > 0) {
+            let matched = false;
+            for (const { type, regex } of patterns) {
+                const match = remaining.match(regex);
+                if (match) {
+                    tokens.push({ type, value: match[0] });
+                    remaining = remaining.slice(match[0].length);
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) {
+                tokens.push({ type: 'unknown', value: remaining[0] });
+                remaining = remaining.slice(1);
+            }
+        }
+        return tokens;
+    }
+
+    function renderCode(code) {
+        const tokens = tokenize(code);
+        return tokens.map(t => {
+            if (t.type === 'whitespace' || t.type === 'unknown') {
+                return escapeHtml(t.value);
+            }
+            return `<span class="token-${t.type}">${escapeHtml(t.value)}</span>`;
+        }).join('');
+    }
+
+    function escapeHtml(text) {
+        return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function trimLines() {
+        while (containerEl.children.length > config.maxLines) {
+            containerEl.removeChild(containerEl.firstChild);
+        }
+    }
+
+    function createLine() {
+        const line = document.createElement('div');
+        line.className = 'repl-line';
+        
+        const prompt = document.createElement('span');
+        prompt.className = 'prompt';
+        prompt.innerHTML = '&gt;';
+        
+        const code = document.createElement('span');
+        code.className = 'code';
+        
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        
+        line.appendChild(prompt);
+        line.appendChild(code);
+        line.appendChild(cursor);
+        containerEl.appendChild(line);
+        trimLines();
+        
+        return { line, code, cursor };
+    }
+
+    function createOutputLine() {
+        const line = document.createElement('div');
+        line.className = 'output-line';
+        
+        const output = document.createElement('span');
+        output.className = 'output';
+        
+        line.appendChild(output);
+        containerEl.appendChild(line);
+        trimLines();
+        
+        return { line, output };
+    }
+
+    function createBlankLine() {
+        const line = document.createElement('div');
+        line.className = 'blank-line';
+        line.innerHTML = '&nbsp;';
+        containerEl.appendChild(line);
+        trimLines();
+    }
+
+    function tick() {
+        if (!isHovering) return;
+
+        const example = examples[currentExample];
+        const inputLines = getInputLines(example);
+
+        switch (phase) {
+            case 'typing':
+                // Create a new line if needed
+                if (!currentLineEl) {
+                    currentLineEl = createLine();
+                    currentLineEl.cursor.classList.add('visible');
+                }
+
+                const currentText = inputLines[currentLineIndex];
+
+                if (charIndex < currentText.length) {
+                    charIndex++;
+                    currentLineEl.code.innerHTML = renderCode(currentText.slice(0, charIndex));
+                    timeoutId = setTimeout(tick, config.typeSpeed);
+                } else {
+                    // Done typing this line
+                    currentLineEl.cursor.classList.remove('visible');
+                    currentLineEl = null;
+                    
+                    if (currentLineIndex < inputLines.length - 1) {
+                        // More lines to type
+                        currentLineIndex++;
+                        charIndex = 0;
+                        phase = 'typing';
+                        timeoutId = setTimeout(tick, config.pauseAfterType);
+                    } else {
+                        // All lines done, show output
+                        phase = 'showOutput';
+                        timeoutId = setTimeout(tick, config.pauseAfterType);
+                    }
+                }
+                break;
+
+            case 'showOutput':
+                const outputLine = createOutputLine();
+                outputLine.output.textContent = example.output;
+                phase = 'pauseAfterOutput';
+                timeoutId = setTimeout(tick, config.pauseAfterOutput);
+                break;
+
+            case 'pauseAfterOutput':
+                // Add blank line between examples
+                createBlankLine();
+                
+                // Move to next example
+                charIndex = 0;
+                currentLineIndex = 0;
+                currentExample = (currentExample + 1) % examples.length;
+                phase = 'typing';
+                timeoutId = setTimeout(tick, config.pauseBetween);
+                break;
+        }
+    }
+
+    function start() {
+        if (timeoutId) return;
+        tick();
+    }
+
+    function pause() {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+        }
+    }
+
+    // Make startup message
+    createOutputLine().output.textContent = "[[Owl 1.3 REPL]]";
+
+    // Listen for messages from parent (tile hover)
+    window.addEventListener('message', function(e) {
+        if (!e.data || e.data.type !== 'hover') return;
+        if (e.data.value) {
+            isHovering = true;
+            document.body.classList.add('hovering');
+            start();
+        } else {
+            isHovering = false;
+            document.body.classList.remove('hovering');
+            pause();
+        }
+    });
+    </script>
+</body>
+</html>
+

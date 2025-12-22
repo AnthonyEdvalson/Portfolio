@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mod Chip</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        svg {
+            width: 80%;
+            height: 80%;
+            max-width: 300px;
+            max-height: 300px;
+        }
+
+        .node {
+            fill: #282828;
+        }
+
+        .edge {
+            fill: none;
+            stroke: #282828;
+            opacity: 0.5;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+        }
+
+        .arrow {
+            fill: #282828;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        body.hovering .arrow {
+            opacity: 1;
+        }
+
+        @keyframes moveAlongPath {
+            0% { offset-distance: 0%; }
+            100% { offset-distance: 100%; }
+        }
+
+        body.hovering .arrow {
+            animation: moveAlongPath 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <svg viewBox="0 0 200 200" id="graph">
+            <g id="edges"></g>
+            <g id="arrows"></g>
+            <g id="nodes"></g>
+        </svg>
+    </div>
+
+    <script>
+    const cx = 100;
+    const cy = 100;
+    const innerRadius = 30;
+    const outerRadius = 70;
+    const nodeRadius = 8;
+
+    const innerNodes = [];
+    for (let i = 0; i < 4; i++) {
+        const angle = (i * Math.PI / 2) - Math.PI / 2;
+        innerNodes.push({
+            x: cx + Math.cos(angle) * innerRadius,
+            y: cy + Math.sin(angle) * innerRadius,
+            id: `inner-${i}`,
+            radius: nodeRadius
+        });
+    }
+
+    const outerNodes = [];
+    for (let i = 0; i < 4; i++) {
+        const angle = (i * Math.PI / 2) - Math.PI / 2;
+        outerNodes.push({
+            x: cx + Math.cos(angle) * outerRadius,
+            y: cy + Math.sin(angle) * outerRadius,
+            id: `outer-${i}`,
+            radius: nodeRadius
+        });
+    }
+
+    const edges = [];
+
+    for (let i = 0; i < 4; i++) {
+        const from = innerNodes[i];
+        const to = innerNodes[(i + 1) % 4];
+        edges.push({ from, to, type: 'cycle', index: i });
+    }
+
+    for (let i = 0; i < 4; i++) {
+        edges.push({ from: outerNodes[i], to: innerNodes[i], type: 'feed', index: i });
+    }
+
+    const edgesGroup = document.getElementById('edges');
+    const nodesGroup = document.getElementById('nodes');
+    const arrowsGroup = document.getElementById('arrows');
+
+    function getStraightPath(from, to) {
+        return { 
+            edge: `M${from.x},${from.y} L${to.x},${to.y}`,
+            anim: `M${from.x},${from.y} L${to.x},${to.y}`
+        };
+    }
+
+    function getArcPath(from, to, overshoot = 0) {
+        return { 
+            edge: `M${from.x},${from.y} A${innerRadius},${innerRadius} 0 0 1 ${to.x},${to.y}`,
+            anim: `M${from.x},${from.y} A${innerRadius},${innerRadius} 0 0 1 ${to.x},${to.y}`
+        };
+    }
+
+    edges.forEach((edge, idx) => {        
+        const { from, to } = edge;
+        if (edge.type === 'cycle') {
+            path = `M${from.x},${from.y} A${innerRadius},${innerRadius} 0 0 1 ${to.x},${to.y}`;
+        } else {
+            path = `M${from.x},${from.y} L${to.x},${to.y}`;
+        }
+        
+        const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pathEl.setAttribute('d', path);
+        pathEl.setAttribute('class', 'edge');
+        pathEl.setAttribute('id', `edge-${idx}`);
+        edgesGroup.appendChild(pathEl);
+        
+        const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        arrow.setAttribute('r', '3');
+        arrow.setAttribute('class', `arrow arrow-${edge.type}-${edge.index}`);
+        arrow.style.offsetPath = `path('${path}')`;
+        arrow.style.offsetRotate = '0deg';
+        arrowsGroup.appendChild(arrow);
+    });
+
+    const allNodes = [...innerNodes, ...outerNodes];
+    allNodes.forEach((node) => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', node.x);
+        circle.setAttribute('cy', node.y);
+        circle.setAttribute('r', node.radius);
+        circle.setAttribute('class', 'node');
+        nodesGroup.appendChild(circle);
+    });
+
+    // Listen for messages from parent (tile hover)
+    window.addEventListener('message', function(e) {
+        if (!e.data || e.data.type !== 'hover') return;
+        if (e.data.value) {
+            document.body.classList.add('hovering');
+        } else {
+            document.body.classList.remove('hovering');
+        }
+    });
+    </script>
+</body>
+</html>
+

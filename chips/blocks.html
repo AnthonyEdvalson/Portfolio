@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blocks Animation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: transparent;
+            overflow: hidden;
+        }
+
+        .blocks-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            perspective: none;
+
+            background-image: radial-gradient(#FFFFFF40 0.5px, transparent 0);
+            background-size: 5vmin 5vmin;
+        }
+
+        .scene {
+            --block-size: 10vmin;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .block {
+            position: absolute;
+            width: var(--block-size);
+            height: var(--block-size);
+            transform-style: preserve-3d;
+        }
+
+        .block-face {
+            position: absolute;
+            width: var(--block-size);
+            height: var(--block-size);
+            background-color: #CCC;
+            outline: 1px solid #222;
+            outline-offset: -0.5px;
+            backface-visibility: hidden;
+        }
+
+        .block-bottom {
+            transform: rotateX(-90deg) translateZ(calc(var(--block-size) / 2));
+            background-color: #AAA;
+        }
+
+        .block-front {
+            transform: translateZ(calc(var(--block-size) / 2));
+            background-color: #DDD;
+        }
+
+        .block-left {
+            transform: rotateY(-90deg) translateZ(calc(var(--block-size) / 2));
+            background-color: #CCC;
+        }
+
+        .block-right {
+            transform: rotateY(90deg) translateZ(calc(var(--block-size) / 2));
+            background-color: #CCC;
+        }
+
+        .block-back {
+            transform: rotateY(180deg) translateZ(calc(var(--block-size) / 2));
+            background-color: #CCC;
+        }
+
+        .block-top {
+            transform: rotateX(90deg) translateZ(calc(var(--block-size) / 2));
+            background-color: #CCC;
+        }
+    </style>
+</head>
+<body>
+    <div class="blocks-container" id="container">
+        <div class="scene" id="scene"></div>
+    </div>
+
+    <script>
+        // Configuration
+        const blockSizeVmin = 10;
+        const dropDistanceVmin = 100;
+        const staggerDelayMs = 50;
+        const buildSpeed = 0.2;
+        const rotateSpeed = 0.01;
+        const exitSpeed = 0.1;
+
+        function generateBuilding() {
+            const blocks = [
+                { x: -2, y: -2, z: -1 },
+                { x: -2, y: -2, z: 0 },
+                { x: -2, y: -2, z: 1 },
+                { x: -1, y: -2, z: -2 },
+                { x: -1, y: -2, z: -1 },
+                { x: -1, y: -2, z: 0 },
+                { x: -1, y: -2, z: 1 },
+                { x: -1, y: -2, z: 2 },
+                { x: 0, y: -2, z: -2},
+                { x: 0, y: -2, z: -1 },
+                { x: 0, y: -2, z: 0 },
+                { x: 0, y: -2, z: 1 },
+                { x: 0, y: -2, z: 2 },
+                { x: 1, y: -2, z: -2 },
+                { x: 1, y: -2, z: -1 },
+                { x: 1, y: -2, z: 0 },
+                { x: 1, y: -2, z: 1 },
+                { x: 1, y: -2, z: 2 },
+                { x: 2, y: -2, z: -1 },
+                { x: 2, y: -2, z: 0 },
+                { x: 2, y: -2, z: 1 },
+
+                { x: -2, y: -1, z: -1 },
+                { x: -2, y: -1, z: 0 },
+                { x: -2, y: -1, z: 1 },
+                { x: -1, y: -1, z: -2 },
+                { x: -1, y: -1, z: 2 },
+                // { x: 0, y: -1, z: -2},
+                // { x: 0, y: -1, z: 2 },
+                { x: 1, y: -1, z: -2 },
+                { x: 1, y: -1, z: 2 },
+                { x: 2, y: -1, z: -1 },
+                { x: 2, y: -1, z: 0 },
+                { x: 2, y: -1, z: 1 },
+
+                { x: -2, y: 0, z: -1 },
+                { x: -2, y: 0, z: 0 },
+                { x: -2, y: 0, z: 1 },
+                { x: -1, y: 0, z: -2 },
+                { x: -1, y: 0, z: 2 },
+                // { x: 0, y: 0, z: -2},
+                // { x: 0, y: 0, z: 2 },
+                { x: 1, y: 0, z: -2 },
+                { x: 1, y: 0, z: 2 },
+                { x: 2, y: 0, z: -1 },
+                { x: 2, y: 0, z: 0 },
+                { x: 2, y: 0, z: 1 },
+
+                { x: -2, y: 1, z: -2 },
+                { x: -2, y: 1, z: -1 },
+                { x: -2, y: 1, z: 0 },
+                { x: -2, y: 1, z: 1 },
+                { x: -2, y: 1, z: 2 },
+                { x: -1, y: 1, z: -2 },
+                { x: -1, y: 1, z: 2 },
+                { x: 0, y: 1, z: -2},
+                { x: 0, y: 1, z: 2 },
+                { x: 1, y: 1, z: -2 },
+                { x: 1, y: 1, z: 2 },
+                { x: 2, y: 1, z: -2 },
+                { x: 2, y: 1, z: -1 },
+                { x: 2, y: 1, z: 0 },
+                { x: 2, y: 1, z: 1 },
+                { x: 2, y: 1, z: 2 },
+
+
+                { x: -1, y: 2, z: -2 },
+                { x: -1, y: 2, z: -1 },
+                { x: -1, y: 2, z: 0 },
+                { x: -1, y: 2, z: 1 },
+                { x: -1, y: 2, z: 2 },
+                { x: 0, y: 2, z: -2 },
+                { x: 0, y: 2, z: 2 },
+                { x: 1, y: 2, z: -2 },
+                { x: 1, y: 2, z: -1 },
+                { x: 1, y: 2, z: 0 },
+                { x: 1, y: 2, z: 1 },
+                { x: 1, y: 2, z: 2 },
+
+                { x: 0, y: 3, z: -2 },
+                { x: 0, y: 3, z: -1 },
+                { x: 0, y: 3, z: 0 },
+                { x: 0, y: 3, z: 1 },
+                { x: 0, y: 3, z: 2 },
+
+            ]
+            return blocks;
+        }
+
+        const scene = document.getElementById('scene');
+        const container = document.getElementById('container');
+        
+        // State: 'empty' | 'building' | 'rotating' | 'paused'
+        let state = 'empty';
+        let blockStates = [];
+        let buildStartTime = 0;
+        let sceneRotation = -45;
+        let hovering = false;
+        let rotationVel = 0;
+
+        function createBlock(x, y, z, index) {
+            const block = document.createElement('div');
+            block.className = 'block';
+            
+            const offsetX = (x - 0.5) * blockSizeVmin;
+            const offsetZ = (z - 0.5) * blockSizeVmin;
+            const finalY = y * blockSizeVmin;
+            const startY = finalY + dropDistanceVmin;
+
+            block.style.left = `${offsetX}vmin`;
+            block.style.top = `${offsetZ}vmin`;
+
+            const faces = ['bottom', 'front', 'left', 'right', 'top'];
+            faces.forEach(face => {
+                const faceEl = document.createElement('div');
+                faceEl.className = `block-face block-${face}`;
+                block.appendChild(faceEl);
+            });
+
+            return {
+                el: block,
+                finalY,
+                startY,
+                currentY: startY,
+                delay: index * staggerDelayMs,
+                settled: false,
+            };
+        }
+
+        function renderBuilding() {
+            const blocks = generateBuilding();
+            blocks.sort((a, b) => a.y - b.y);
+
+            scene.innerHTML = '';
+            blockStates = [];
+
+            blocks.forEach((pos, index) => {
+                const blockState = createBlock(pos.x, pos.y, pos.z, index);
+                scene.appendChild(blockState.el);
+                blockStates.push(blockState);
+            });
+
+            updateVisuals();
+        }
+
+        function lerp(current, target, factor) {
+            const diff = target - current;
+            if (Math.abs(diff) < 0.001) return target;
+            return current + diff * factor;
+        }
+
+        function updateVisuals() {
+            scene.style.transform = `rotateX(60deg) rotateZ(${sceneRotation}deg)`;
+
+            blockStates.forEach(blockState => {
+                blockState.el.style.transform = `translateZ(${blockState.currentY}vmin)`;
+            });
+        }
+
+        function resetBlocks() {
+            blockStates.forEach(blockState => {
+                blockState.currentY = blockState.startY;
+                blockState.settled = false;
+            });
+            sceneRotation = -45;
+        }
+
+        let lastTime = 0;
+
+        function animate(currentTime) {
+            const dt = lastTime ? currentTime - lastTime : 16;
+            lastTime = currentTime;
+
+            if (state === 'building') {
+                const elapsed = currentTime - buildStartTime;
+                let allSettled = true;
+
+                blockStates.forEach(blockState => {
+                    if (elapsed >= blockState.delay) {
+                        blockState.currentY = lerp(blockState.currentY, blockState.finalY, buildSpeed);
+                        if (Math.abs(blockState.currentY - blockState.finalY) < 0.1) {
+                            blockState.currentY = blockState.finalY;
+                            blockState.settled = true;
+                        }
+                    }
+                    if (!blockState.settled) allSettled = false;
+                });
+
+                rotationVel = lerp(rotationVel, rotateSpeed, 0.05);
+                if (allSettled) {
+                    if (hovering) {
+                        state = 'rotating';
+                    } else {
+                        state = 'paused';
+                    }
+                }
+            } else if (state === 'rotating') {
+                rotationVel = lerp(rotationVel, rotateSpeed, 0.05);
+            } else if (state === 'paused') {
+                rotationVel = lerp(rotationVel, 0, 0.05);
+            }
+
+            sceneRotation += rotationVel * dt;
+
+            updateVisuals();
+            if (state !== 'paused' || rotationVel > 0.001) {
+
+                requestAnimationFrame(animate);
+            }
+        }
+
+        // Listen for messages from parent (tile hover)
+        window.addEventListener('message', function(e) {
+            if (!e.data || e.data.type !== 'hover') return;
+            if (e.data.value) {
+                hovering = true;
+                if (state === 'empty') {
+                    state = 'building';
+                    buildStartTime = performance.now();
+                }
+                else if (state === 'paused') {
+                    state = 'rotating';
+                    lastTime = performance.now();
+                    requestAnimationFrame(animate);
+                }
+            } else {
+                hovering = false;
+                if (state === 'rotating') {
+                    state = 'paused';
+                }
+            }
+        });
+
+        renderBuilding();
+        requestAnimationFrame(animate);
+    </script>
+</body>
+</html>

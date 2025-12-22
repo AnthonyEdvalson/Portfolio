@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D World Map</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        :root {
+            --base: #111;
+            --accent: #D05030;
+        }
+
+        .viewport {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .map-container {
+            position: absolute;
+            will-change: transform;
+        }
+
+        .map-container img {
+            display: block;
+            pointer-events: none;
+            filter: contrast(0.9) brightness(0.5);
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="viewport" id="viewport">
+        <div class="map-container" id="mapContainer">
+            <img id="mapImage" src="assets/map.png" alt="World Map">
+            <canvas id="pathCanvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+    // ============================================
+    // CONFIGURATION
+    // ============================================
+    const config = {
+        // Waypoints as percentage of map dimensions
+        waypoints: [
+            { x: 0.8, y: 0.9 }, // Abberness
+            { x: 0.75, y: 0.83 }, // Arkstead
+            { x: 0.40, y: 0.7 }, // Black winds
+            { x: 0.07, y: 0.7 }, // Rozha
+            { x: 0.20, y: 0.54 }, // Savoth
+            { x: 0.35, y: 0.4 }, // Marithas Kir
+            { x: 0.38, y: 0.32 }, // Kithiker
+            { x: 0.65, y: 0.45 }, // Dawnspire
+            { x: 0.8, y: 0.5 }, // Yonessa
+            { x: 0.8, y: 0.25 }, // Salvos
+            { x: 0.8, y: 0.1 }, // Shatter
+            { x: 0.5, y: 0.15 }, // Laphena
+            { x: 0.3, y: 0.15 }, // Blackwood
+            { x: 0.38, y: 0.32 }, // Kithiker
+            { x: 0.35, y: 0.4 }, // Marithas Kir
+            { x: 0.65, y: 0.45 }, // Dawnspire
+            { x: 0.75, y: 0.7 }, // Istingham
+            { x: 0.9, y: 0.8 }, // Vaynmouth
+        ],
+        mapScale: 0.75,            // Scale of the map (0.5 = 50% size)
+        drawSpeed: 0.02,          // Units per second (0-1 scale for full path)
+        pauseDuration: 1000,      // ms pause at each waypoint
+        trailSegments: 5,         // Number of curve segments visible at once
+        lineWidth: 5,
+        lineDash: [6, 10],//[16, 12],        // Dashed line pattern
+        dotRadius: 10,             // Radius of dot at path end
+        cameraSmoothing: 0.08,    // Lerp factor for camera (0-1, lower = smoother)
+    };
+
+    // ============================================
+    // STATE
+    // ============================================
+    let isHovering = false;
+    let progress = 1;
+    let phase = 'drawing';
+    let pauseTimer = 0;
+    let lastWaypointIndex = -1;
+    let lastTime = 0;
+
+    let mapWidth = 0;
+    let mapHeight = 0;
+    let scaledMapWidth = 0;
+    let scaledMapHeight = 0;
+    let viewportWidth = 0;
+    let viewportHeight = 0;
+
+    // Camera smoothing state
+    let cameraX = 0;
+    let cameraY = 0;
+
+    const viewport = document.getElementById('viewport');
+    const mapContainer = document.getElementById('mapContainer');
+    const mapImage = document.getElementById('mapImage');
+    const canvas = document.getElementById('pathCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // ============================================
+    // PATH GENERATION
+    // ============================================
+    // Pre-compute bezier path as array of points for easy interpolation
+    let pathPoints = [];
+    let pathLength = 0;
+    let segmentLengths = [];
+
+    function computePath() {
+        if (mapWidth === 0 || mapHeight === 0) return;
+
+        const pts = config.waypoints.map(w => ({
+            x: w.x * mapWidth,
+            y: w.y * mapHeight
+        }));
+
+        pathPoints = [];
+        segmentLengths = [];
+        pathLength = 0;
+
+        // Generate smooth bezier curves through waypoints
+        for (let i = 0; i < pts.length; i++) {
+            const p0 = pts[(i - 1 + pts.length) % pts.length];
+            const p1 = pts[i];
+            const p2 = pts[(i + 1) % pts.length];
+            const p3 = pts[(i + 2) % pts.length];
+
+            // Catmull-Rom to Bezier conversion for smooth curves
+            const segmentPoints = catmullRomToBezier(p0, p1, p2, p3, 50);
+            
+            let segLen = 0;
+            for (let j = 0; j < segmentPoints.length; j++) {
+                if (j > 0) {
+                    const dx = segmentPoints[j].x - segmentPoints[j-1].x;
+                    const dy = segmentPoints[j].y - segmentPoints[j-1].y;
+                    segLen += Math.sqrt(dx * dx + dy * dy);
+                }
+                pathPoints.push({
+                    ...segmentPoints[j],
+                    waypointIndex: i
+                });
+            }
+            segmentLengths.push(segLen);
+            pathLength += segLen;
+        }
+    }
+
+    function catmullRomToBezier(p0, p1, p2, p3, segments) {
+        const points = [];
+        for (let t = 0; t <= 1; t += 1 / segments) {
+            const t2 = t * t;
+            const t3 = t2 * t;
+
+            const x = 0.5 * (
+                2 * p1.x +
+                (-p0.x + p2.x) * t +
+                (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 +
+                (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3
+            );
+            const y = 0.5 * (
+                2 * p1.y +
+                (-p0.y + p2.y) * t +
+                (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 +
+                (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3
+            );
+            points.push({ x, y });
+        }
+        return points;
+    }
+
+    // ============================================
+    // INTERPOLATION
+    // ============================================
+    // Ease-in-out function (smooth start and end)
+    function easeInOut(t) {
+        // Quadratic ease-in-out
+        return t < 0.5 
+            ? 2 * t * t 
+            : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    }
+
+    // Get smooth interpolated position along the path with segment easing
+    function getInterpolatedPoint(t, applyEasing = true) {
+        const totalPoints = pathPoints.length;
+        const numSegments = config.waypoints.length;
+        const pointsPerSegment = totalPoints / numSegments;
+        
+        // Calculate which segment we're in and local progress
+        const globalPos = (t * totalPoints) % totalPoints;
+        const segmentIndex = Math.floor(globalPos / pointsPerSegment);
+        const localProgress = (globalPos % pointsPerSegment) / pointsPerSegment;
+        
+        // Apply easing to local progress within the segment
+        const easedLocal = applyEasing ? easeInOut(localProgress) : localProgress;
+        
+        // Convert back to global position
+        const easedGlobalPos = (segmentIndex + easedLocal) * pointsPerSegment;
+        
+        const index = Math.floor(easedGlobalPos) % totalPoints;
+        const frac = easedGlobalPos - Math.floor(easedGlobalPos);
+        
+        const p1 = pathPoints[index];
+        const p2 = pathPoints[(index + 1) % totalPoints];
+        
+        return {
+            x: p1.x + (p2.x - p1.x) * frac,
+            y: p1.y + (p2.y - p1.y) * frac
+        };
+    }
+
+    // Get eased global position (for consistent line + dot drawing)
+    function getEasedPosition(t) {
+        const totalPoints = pathPoints.length;
+        const numSegments = config.waypoints.length;
+        const pointsPerSegment = totalPoints / numSegments;
+        
+        const globalPos = (t * totalPoints) % totalPoints;
+        const segmentIndex = Math.floor(globalPos / pointsPerSegment);
+        const localProgress = (globalPos % pointsPerSegment) / pointsPerSegment;
+        
+        const easedLocal = easeInOut(localProgress);
+        return (segmentIndex + easedLocal) * pointsPerSegment;
+    }
+
+    // ============================================
+    // DRAWING
+    // ============================================
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (pathPoints.length === 0) return;
+
+        const accent = getComputedStyle(document.documentElement)
+            .getPropertyValue('--accent').trim() || '#D05030';
+
+        // Calculate points per segment (for trailing window)
+        const pointsPerSegment = pathPoints.length / config.waypoints.length;
+        const trailLength = config.trailSegments * pointsPerSegment;
+
+        // Don't use wrapping for eased position - let it grow continuously
+        // This way the trail math works correctly
+        const totalPoints = pathPoints.length;
+        const numSegments = config.waypoints.length;
+        const pps = totalPoints / numSegments;
+        
+        const globalPos = progress * totalPoints;
+        const segmentIndex = Math.floor(globalPos / pps);
+        const localProgress = (globalPos % pps) / pps;
+        const easedLocal = easeInOut(localProgress);
+        const easedHeadPos = (segmentIndex + easedLocal) * pps;
+        
+        // Tail snaps to half segment boundaries
+        const tailPos = Math.ceil((easedHeadPos - trailLength) / pointsPerSegment - 0.5) * pointsPerSegment + 0.5;
+        
+        // Don't draw if we haven't started
+        if (progress <= 0) return;
+
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = config.lineWidth;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.setLineDash(config.lineDash);
+
+        ctx.beginPath();
+        
+        // Calculate start and end, using modulo for actual point lookups
+        const startIdx = Math.max(0, Math.floor(tailPos));
+        const endIdx = Math.floor(easedHeadPos);
+        
+        if (endIdx > startIdx) {
+            // Get wrapped index for first point
+            const firstIdx = startIdx % totalPoints;
+            ctx.moveTo(pathPoints[firstIdx].x, pathPoints[firstIdx].y);
+            
+            // Draw through all points, wrapping indices as needed
+            for (let i = startIdx + 1; i <= endIdx; i++) {
+                const idx = i % totalPoints;
+                ctx.lineTo(pathPoints[idx].x, pathPoints[idx].y);
+            }
+            
+            // Draw to interpolated head position for smooth end
+            const headIdx = endIdx % totalPoints;
+            const nextIdx = (endIdx + 1) % totalPoints;
+            const frac = easedHeadPos - endIdx;
+            const p1 = pathPoints[headIdx];
+            const p2 = pathPoints[nextIdx];
+            const headX = p1.x + (p2.x - p1.x) * frac;
+            const headY = p1.y + (p2.y - p1.y) * frac;
+            
+            ctx.lineTo(headX, headY);
+            ctx.stroke();
+
+            // Draw dot at the head position
+            ctx.setLineDash([]);
+            ctx.beginPath();
+            ctx.arc(headX, headY, config.dotRadius, 0, Math.PI * 2);
+            ctx.fillStyle = accent;
+            ctx.fill();
+        }
+    }
+
+    // ============================================
+    // CAMERA / PANNING
+    // ============================================
+    function updateCamera() {
+        if (pathPoints.length === 0) return;
+
+        // Use eased position for camera (same as line/dot)
+        const easedPos = getEasedPosition(progress);
+        const index = Math.floor(easedPos);
+        const frac = easedPos - index;
+        const p1 = pathPoints[index % pathPoints.length];
+        const p2 = pathPoints[(index + 1) % pathPoints.length];
+        
+        // Get position in original coordinates, then scale for camera
+        const currentX = (p1.x + (p2.x - p1.x) * frac) * config.mapScale;
+        const currentY = (p1.y + (p2.y - p1.y) * frac) * config.mapScale;
+
+        // Target: center the current point in the viewport
+        let targetX = -(currentX - viewportWidth / 2);
+        let targetY = -(currentY - viewportHeight / 2);
+
+        // Clamp to scaled map bounds
+        const minX = -(scaledMapWidth - viewportWidth);
+        const minY = -(scaledMapHeight - viewportHeight);
+        targetX = Math.max(minX, Math.min(0, targetX));
+        targetY = Math.max(minY, Math.min(0, targetY));
+
+        // Lerp camera position for smooth movement
+        cameraX += (targetX - cameraX) * config.cameraSmoothing;
+        cameraY += (targetY - cameraY) * config.cameraSmoothing;
+
+        mapContainer.style.transform = `translate(${cameraX}px, ${cameraY}px)`;
+    }
+
+    // ============================================
+    // ANIMATION LOOP
+    // ============================================
+    function tick(time) {
+        if (!isHovering) {
+            lastTime = time;
+            requestAnimationFrame(tick);
+            return;
+        }
+
+        const dt = lastTime > 0 ? (time - lastTime) / 1000 : 0;
+        lastTime = time;
+
+        switch (phase) {
+            case 'drawing':
+                progress += config.drawSpeed * dt;
+
+                // Check if we've reached a new waypoint (for pausing)
+                if (pathPoints.length > 0) {
+                    const pointIndex = Math.floor(progress * pathPoints.length) % pathPoints.length;
+                    const currentWaypointIndex = pathPoints[pointIndex].waypointIndex;
+                    
+                    if (currentWaypointIndex !== lastWaypointIndex && lastWaypointIndex !== -1) {
+                        // Just reached a new waypoint, pause
+                        phase = 'pausing';
+                        pauseTimer = config.pauseDuration;
+                    }
+                    lastWaypointIndex = currentWaypointIndex;
+                }
+                break;
+
+            case 'pausing':
+                pauseTimer -= dt * 1000;
+                if (pauseTimer <= 0) {
+                    phase = 'drawing';
+                }
+                break;
+        }
+
+        draw();
+        updateCamera();
+        requestAnimationFrame(tick);
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    function init() {
+        viewportWidth = viewport.clientWidth;
+        viewportHeight = viewport.clientHeight;
+
+        function onMapLoad() {
+            mapWidth = mapImage.naturalWidth;
+            mapHeight = mapImage.naturalHeight;
+            scaledMapWidth = mapWidth * config.mapScale;
+            scaledMapHeight = mapHeight * config.mapScale;
+
+            canvas.width = mapWidth;
+            canvas.height = mapHeight;
+            
+            // Apply scale to image and canvas
+            mapImage.style.width = scaledMapWidth + 'px';
+            mapImage.style.height = scaledMapHeight + 'px';
+            canvas.style.width = scaledMapWidth + 'px';
+            canvas.style.height = scaledMapHeight + 'px';
+
+            computePath();
+            
+            // Initialize camera to starting position (no lerp on first frame)
+            if (pathPoints.length > 0) {
+                const startPoint = pathPoints[0];
+                const scaledX = startPoint.x * config.mapScale;
+                const scaledY = startPoint.y * config.mapScale;
+                cameraX = -(scaledX - viewportWidth / 2);
+                cameraY = -(scaledY - viewportHeight / 2);
+                
+                // Clamp to scaled bounds
+                const minX = -(scaledMapWidth - viewportWidth);
+                const minY = -(scaledMapHeight - viewportHeight);
+                cameraX = Math.max(minX, Math.min(0, cameraX));
+                cameraY = Math.max(minY, Math.min(0, cameraY));
+                
+                mapContainer.style.transform = `translate(${cameraX}px, ${cameraY}px)`;
+            }
+            
+            draw();
+        }
+
+        mapImage.onload = onMapLoad;
+
+        // If image already loaded
+        if (mapImage.complete && mapImage.naturalWidth > 0) {
+            onMapLoad();
+        }
+
+        window.addEventListener('resize', () => {
+            viewportWidth = viewport.clientWidth;
+            viewportHeight = viewport.clientHeight;
+            updateCamera();
+        });
+
+        // Listen for messages from parent (tile hover)
+        window.addEventListener('message', function(e) {
+            if (!e.data || e.data.type !== 'hover') return;
+            isHovering = e.data.value;
+        });
+
+        requestAnimationFrame(tick);
+    }
+
+    init();
+    </script>
+</body>
+</html>
+

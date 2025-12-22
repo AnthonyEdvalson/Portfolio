@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raster Text</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #0a0a0f;
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="raster"></canvas>
+
+    <script>
+    const TEXT = "TONY EDVALSON";
+    const PIXEL_SIZE = 6;
+    const GAP = 1;
+    const CELL_SIZE = PIXEL_SIZE + GAP;
+    const LETTER_SPACING = 2; // pixels between letters
+
+    // Custom 7x11 pixel font with 2px stroke weight - each letter is [row][col], 1 = filled, 0 = empty
+    const FONT = {
+        'T': [
+            [1,1,1,1,1,1],
+            [1,1,1,1,1,1],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+        ],
+        'O': [
+            [0,0,1,1,1,0,0],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [0,0,1,1,1,0,0],
+        ],
+        'N': [
+            [1,1,0,0,0,1,1],
+            [1,1,1,0,0,1,1],
+            [1,1,1,0,0,1,1],
+            [1,1,1,1,0,1,1],
+            [1,1,0,1,0,1,1],
+            [1,1,0,1,1,1,1],
+            [1,1,0,0,1,1,1],
+            [1,1,0,0,1,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+        ],
+        'Y': [
+            [1,1,0,0,1,1],
+            [1,1,0,0,1,1],
+            [1,1,0,0,1,1],
+            [0,1,1,1,1,0],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+            [0,0,1,1,0,0],
+        ],
+        'E': [
+            [1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [1,1,1,1,1,1,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1],
+        ],
+        'D': [
+            [1,1,1,1,1,0,0],
+            [1,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,0],
+            [1,1,1,1,1,0,0],
+        ],
+        'V': [
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,1,0,0,0],
+        ],
+        'A': [
+            [0,0,1,1,1,0,0],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+        ],
+        'L': [
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1],
+        ],
+        'S': [
+            [0,1,1,1,1,1,0],
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [0,1,1,1,1,1,0],
+            [0,0,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,1,1,1,1,0],
+            [1,1,1,1,1,0,0],
+        ],
+        ' ': [
+            [0,0,0,0],
+            [0,0,0,0],
+            [0,0,0,0],
+            [0,0,0,0],
+            [0,0,0,0],
+            [0,0,0,0],
+            [0,0,0,0],
+            [0,0,0,0],
+            [0,0,0,0],
+            [0,0,0,0],
+            [0,0,0,0],
+        ],
+    };
+
+    // Colors
+    const BG_COLOR = [15, 15, 15];
+    const OFF_COLOR = [23, 23, 23];
+    const ON_COLOR = [208, 80, 48];
+    const GLOW_COLOR = [208, 80, 48];
+
+    let pixels = [];
+    let canvasW, canvasH;
+    let cols, rows;
+    let textPixels = new Set();
+    let animationStart = 0;
+    let dpr = 1;
+
+    window.addEventListener('load', () => {
+        const canvas = document.getElementById('raster');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            dpr = window.devicePixelRatio || 1;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            canvas.style.width = w + "px";
+            canvas.style.height = h + "px";
+            canvasW = w;
+            canvasH = h;
+            ctx.scale(dpr, dpr);
+            
+            cols = Math.floor(w / CELL_SIZE);
+            rows = Math.floor(h / CELL_SIZE);
+            
+            initPixels();
+            extractTextPixels();
+        }
+
+        resize();
+        window.addEventListener('resize', () => {
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            resize();
+        });
+
+        animationStart = performance.now();
+        loop(ctx);
+    });
+
+    function initPixels() {
+        pixels = [];
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < cols; x++) {
+                pixels.push({
+                    x,
+                    y,
+                    brightness: 0,
+                    targetBrightness: 0,
+                    delay: 0,
+                    flickerPhase: Math.random() * Math.PI * 2,
+                    flickerSpeed: 0.5 + Math.random() * 2
+                });
+            }
+        }
+    }
+
+    // Calculate total width of text in pixels
+    function getTextWidth(text) {
+        let width = 0;
+        for (let char of text) {
+            const glyph = FONT[char];
+            if (glyph) {
+                width += glyph[0].length + LETTER_SPACING;
+            }
+        }
+        return width - LETTER_SPACING; // Remove trailing spacing
+    }
+
+    function extractTextPixels() {
+        textPixels.clear();
+        
+        const textWidth = getTextWidth(TEXT);
+        const textHeight = 11; // All letters are 11 pixels tall
+        
+        // Center the text in the grid
+        const startX = Math.floor((cols - textWidth) / 2);
+        const startY = Math.floor((rows - textHeight) / 2);
+        
+        let cursorX = startX;
+        
+        // Find center for animation
+        const centerX = cols / 2;
+        const centerY = rows / 2;
+        
+        for (let char of TEXT) {
+            const glyph = FONT[char];
+            if (!glyph) continue;
+            
+            const charWidth = glyph[0].length;
+            
+            for (let row = 0; row < glyph.length; row++) {
+                for (let col = 0; col < glyph[row].length; col++) {
+                    if (glyph[row][col] === 1) {
+                        const x = cursorX + col;
+                        const y = startY + row;
+                        
+                        const key = `${x},${y}`;
+                        textPixels.add(key);
+                        
+                        // Find the pixel and set up animation
+                        const pixelIndex = y * cols + x;
+                        if (pixels[pixelIndex]) {
+                            pixels[pixelIndex].isText = true;
+                            
+                            // Calculate delay based on distance from center (spiral effect)
+                            const dx = x - centerX;
+                            const dy = y - centerY - 10;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            
+                            // Spiral delay: combine distance and angle
+                            pixels[pixelIndex].delay = dist * 15;
+                        }
+                    }
+                }
+            }
+            
+            cursorX += charWidth + LETTER_SPACING;
+        }
+        
+        // Add some random "dust" pixels for atmosphere
+        for (let i = 0; i < pixels.length; i++) {
+            if (!pixels[i].isText && Math.random() < 0.02) {
+                pixels[i].isDust = true;
+                pixels[i].delay = Math.random() * 3000;
+            }
+        }
+    }
+
+    function loop(ctx) {
+        function frame(time) {
+            update(time);
+            draw(ctx, time);
+            requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+    }
+
+    function update(time) {
+        const elapsed = time - animationStart;
+        
+        for (let pixel of pixels) {
+            if (pixel.isText) {
+                // Animate text pixels turning on
+                const animTime = elapsed - pixel.delay;
+                if (animTime > 0) {
+                    // Quick turn on with slight overshoot
+                    const t = Math.min(1, animTime / 300);
+                    const eased = 1 - Math.pow(1 - t, 3);
+                    pixel.targetBrightness = eased;
+                    
+                    // Add subtle flicker once on
+                    if (t >= 1) {
+                        const flicker = Math.sin(time * 0.001 * pixel.flickerSpeed + pixel.flickerPhase) * 0.05;
+                        pixel.targetBrightness = 0.95 + flicker + 0.05;
+                    }
+                }
+            } else if (pixel.isDust) {
+                // Dust particles have a gentle pulse
+                const animTime = elapsed - pixel.delay;
+                if (animTime > 0) {
+                    const pulse = (Math.sin(time * 0.002 * pixel.flickerSpeed + pixel.flickerPhase) + 1) * 0.15;
+                    pixel.targetBrightness = pulse;
+                }
+            }
+            
+            // Smooth interpolation
+            pixel.brightness += (pixel.targetBrightness - pixel.brightness) * 0.15;
+        }
+    }
+
+    function draw(ctx, time) {
+        // Clear with background
+        ctx.fillStyle = `rgb(${BG_COLOR[0]}, ${BG_COLOR[1]}, ${BG_COLOR[2]})`;
+        ctx.fillRect(0, 0, canvasW, canvasH);
+        
+        // Calculate offset to center the grid
+        const gridWidth = cols * CELL_SIZE;
+        const gridHeight = rows * CELL_SIZE;
+        const offsetX = (canvasW - gridWidth) / 2;
+        const offsetY = (canvasH - gridHeight) / 2;
+        
+        for (let pixel of pixels) {
+            const x = offsetX + pixel.x * CELL_SIZE;
+            const y = offsetY + pixel.y * CELL_SIZE;
+            
+            const b = pixel.brightness;
+            
+            if (b < 0.01 && !pixel.isText && !pixel.isDust) {
+                // Draw dim "off" pixels
+                ctx.fillStyle = `rgb(${OFF_COLOR[0]}, ${OFF_COLOR[1]}, ${OFF_COLOR[2]})`;
+                ctx.fillRect(x, y, PIXEL_SIZE, PIXEL_SIZE);
+            } else {
+                // Interpolate color based on brightness
+                const r = Math.round(lerp(OFF_COLOR[0], ON_COLOR[0], b));
+                const g = Math.round(lerp(OFF_COLOR[1], ON_COLOR[1], b));
+                const bl = Math.round(lerp(OFF_COLOR[2], ON_COLOR[2], b));
+                
+                // Add glow effect for bright pixels
+                if (b > 0.5) {
+                    const glowSize = PIXEL_SIZE + 4 * b;
+                    const glowOffset = (glowSize - PIXEL_SIZE) / 2;
+                    ctx.fillStyle = `rgba(${GLOW_COLOR[0]}, ${GLOW_COLOR[1]}, ${GLOW_COLOR[2]}, ${b * 0.3})`;
+                    ctx.fillRect(x - glowOffset, y - glowOffset, glowSize, glowSize);
+                }
+                
+                ctx.fillStyle = `rgb(${r}, ${g}, ${bl})`;
+                ctx.fillRect(x, y, PIXEL_SIZE, PIXEL_SIZE);
+            }
+        }
+    }
+
+    function lerp(a, b, t) {
+        return a + (b - a) * t;
+    }
+    </script>
+</body>
+</html>
+

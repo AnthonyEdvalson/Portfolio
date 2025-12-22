@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Latent Waveform</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="c"></canvas>
+    <script>
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
+
+        // State driven by parent messages
+        let hoverTarget = 0;
+        let hover = 0;
+        let mouseTarget = { x: 0.5, y: 0.5 };
+        let mouse = { x: 0.5, y: 0.5 };
+        let time = 0;
+        let prevTime = 0;
+
+        // Seeded random for deterministic visuals
+        let seed = 42;
+        function rand() {
+            seed ^= seed << 13;
+            seed ^= seed >>> 17;
+            seed ^= seed << 5;
+            return ((seed >>> 0) / 4294967296);
+        }
+        
+        function resetSeed(s) { seed = s; }
+
+        // Generate a waveform "preset" - array of harmonic amplitudes
+        // Each corner of latent space gets a different character
+        function generateWaveform(seedVal, character) {
+            resetSeed(seedVal);
+            const NUM_HARMONICS = 32;
+            const amps = [0];
+            
+            for (let i = 0; i < NUM_HARMONICS; i++) {
+                let amp = 0;
+                const freq = i + 1;
+                
+                switch(character) {
+                    case 'warm': // Top-left: warm, bass-heavy, smooth
+                        amp = Math.pow(0.7, (i+10)/4) * (0.5 + 0.5 * rand());
+                        break;
+                    case 'bright': // Top-right: bright, sparkly, high harmonics
+                        amp = 0.3 * rand() + (i > 4 ? 0.4 * Math.pow(0.95, i - 4) : 0.1);
+                        break;
+                    case 'hollow': // Bottom-left: hollow, odd harmonics only
+                        amp = (i % 2 === 0) ? Math.pow(0.9, i) * (0.4 + 0.4 * rand()) : 0.05 * rand();
+                        break;
+                    case 'rich': // Bottom-right: rich, complex, many harmonics
+                        amp = Math.pow(0.94, i) * (0.3 + 0.7 * rand());
+                        // Add some resonant bumps
+                        if (i === 3 || i === 7 || i === 11) amp *= 1.8;
+                        break;
+                }
+                amps.push(amp);
+            }
+            amps.push(0);
+            return amps;
+        }
+
+        function addPump(waveform, t, phase, center, width, comb) {
+            return waveform.map((amp, i) => {
+                const atten = Math.exp(-Math.pow((center - i) / width, 2)) * (i % 2 == 1 ? comb : 1);
+                return amp * (1 + Math.pow(Math.sin(t * 3 + phase * Math.PI), 8) * atten);
+            });
+        }
+
+        // Four corner waveforms in latent space
+        const richBase = generateWaveform(1337, 'rich');
+        const warmBase = generateWaveform(2749, 'warm');
+        const hollowBase = generateWaveform(4219, 'hollow');
+        const brightBase = generateWaveform(6173, 'bright');
+        const waveforms = {
+            topLeft: (t) => addPump(addPump(richBase, t, 0, 5, 3, 1), t, 0.5, 25, 2, 0.5),
+            topRight: (t) => warmBase,
+            bottomLeft: (t) => addPump(hollowBase, t, 0, 25, 5, 0.2),
+            bottomRight: (t) => addPump(addPump(brightBase, t, 0.5, 10, 3, 0.5), t, 0.25, 30, 2, 0.5)
+        };
+
+        // Bilinear interpolation between four corners
+        function bilinearInterpolate(tl, tr, bl, br, x, y) {
+            const result = [];
+            for (let i = 0; i < tl.length; i++) {
+                const top = tl[i] * (1 - x) + tr[i] * x;
+                const bottom = bl[i] * (1 - x) + br[i] * x;
+                result.push(top * (1 - y) + bottom * y);
+            }
+            return result;
+        }
+
+        function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        function resize() {
+            const dpr = Math.min(2, window.devicePixelRatio || 1);
+            const w = Math.max(1, Math.floor(canvas.clientWidth * dpr));
+            const h = Math.max(1, Math.floor(canvas.clientHeight * dpr)) * 0.5;
+            if (canvas.width !== w || canvas.height !== h) {
+                canvas.width = w;
+                canvas.height = h;
+            }
+        }
+        window.addEventListener("resize", resize);
+        resize();
+
+        // Audio-like modulation - creates organic pulsing
+        function getModulation(t, harmonic) {
+            // Multiple layered sine waves for organic feel
+            const slow = Math.sin(t * 0.7 + harmonic * 0.3) * 0.3;
+            const med = Math.sin(t * 1.3 + harmonic * 0.7 + 1.2) * 0.2;
+            const fast = Math.sin(t * 2.9 + harmonic * 1.1 + 2.4) * 0.15;
+            const vfast = Math.sin(t * 5.1 + harmonic * 0.5 + 0.8) * 0.1;
+            return 1 + slow + med + fast + vfast;
+        }
+
+        // Get bar height for a given bin
+        function getBarHeight(binIndex, t, harmonicAmps) {
+            const baseAmp = harmonicAmps[binIndex] || 0;
+            const mod = getModulation(t, binIndex);
+            return 1 - Math.exp(-2 * baseAmp * mod);
+        }
+
+        function draw(tMs) {
+            resize();
+
+            const dt = tMs - prevTime;
+            prevTime = tMs;
+            time += dt * 0.001 * hover;
+            
+            // Smooth state transitions
+            hover = lerp(hover, hoverTarget, 0.06);
+            mouse.x = lerp(mouse.x, mouseTarget.x, 0.3);
+            mouse.y = lerp(mouse.y, mouseTarget.y, 0.3);
+            
+            const w = canvas.width;
+            const h = canvas.height;
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            const baseY = h;
+            const maxBarHeight = h;
+            const drawWidth = w;
+            
+            // Interpolate waveform based on mouse position in latent space
+            const currentWaveform = bilinearInterpolate(
+                waveforms.topLeft(time),
+                waveforms.topRight(time),
+                waveforms.bottomLeft(time),
+                waveforms.bottomRight(time),
+                mouse.x,
+                mouse.y
+            );
+            
+            // Bar properties
+            const numBars = currentWaveform.length;
+            const totalGapRatio = 0.3;
+            const barWidth = drawWidth * (1 - totalGapRatio) / numBars;
+            const gap = drawWidth * totalGapRatio / (numBars - 1);
+            
+            ctx.fillStyle = `rgba(20, 20, 20, ${lerp(0.55, 0.7, hover)})`;
+            
+            // Draw bars
+            for (let i = 0; i < numBars; i++) {
+                const barHeight = getBarHeight(i, time, currentWaveform) * maxBarHeight;
+                const x = i * (barWidth + gap);
+                const y = baseY - barHeight;
+                ctx.fillRect(x, y, barWidth, barHeight);
+            }
+            
+            requestAnimationFrame(draw);
+        }
+
+        // Listen for parent messages
+        window.addEventListener("message", (e) => {
+            if (!e.data) return;
+            if (e.data.type === "hover") {
+                hoverTarget = e.data.value ? 1 : 0;
+            } else if (e.data.type === "mousemove") {
+                mouseTarget.x = clamp(e.data.x, 0, 1);
+                mouseTarget.y = clamp(e.data.y, 0, 1);
+            }
+        });
+
+        requestAnimationFrame(draw);
+    </script>
+</body>
+</html>

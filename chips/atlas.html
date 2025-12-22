@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas Animation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: transparent;
+            overflow: hidden;
+        }
+
+        .atlas-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+
+            --atlas-size: 12vmin;
+
+            background-image: radial-gradient(#FFFFFF40 0.5px, transparent 0);
+            background-size: 5vmin 5vmin;
+        }
+
+        .atlas {
+            position: relative;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .atlas-wobble {
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .atlas-block,
+        .atlas-face {
+            background-color: #CCC;
+            outline: 1px solid #CCC;
+            outline-offset: 0;
+            transform-style: preserve-3d;
+            position: absolute;
+        }
+
+        .atlas-attention .atlas-block,
+        .atlas-attention .atlas-face {
+            outline: 1px solid #000;
+        }
+
+        .atlas-bottom-edge {
+            width: 100%;
+            height: var(--atlas-size);
+            bottom: 0;
+            left: 0;
+            transform-origin: bottom;
+            transform: rotateX(90deg);
+        }
+
+        .atlas-top-edge {
+            width: 100%;
+            height: var(--atlas-size);
+            top: 0;
+            left: 0;
+            transform-origin: top;
+            transform: rotateX(-90deg);
+        }
+
+        .atlas-left-edge {
+            width: var(--atlas-size);
+            height: 100%;
+            left: 0;
+            transform-origin: left;
+            transform: rotateY(90deg);
+        }
+
+        .atlas-right-edge {
+            width: var(--atlas-size);
+            height: 100%;
+            right: 0;
+            transform-origin: right;
+            transform: rotateY(-90deg);
+        }
+
+        .atlas-top {
+            width: calc(var(--atlas-size) * 3);
+            height: var(--atlas-size);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .atlas-bottom {
+            width: calc(var(--atlas-size) * 3);
+            height: var(--atlas-size);
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+
+        .atlas-left {
+            width: var(--atlas-size);
+            height: calc(var(--atlas-size) * 3);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+
+        .atlas-right {
+            width: var(--atlas-size);
+            height: calc(var(--atlas-size) * 3);
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .atlas-back-edge {
+            width: 100%;
+            height: 100%;
+            transform: rotateX(180deg) translateZ(var(--atlas-size));
+        }
+
+        .atlas-center {
+            width: calc(var(--atlas-size) * 2);
+            height: calc(var(--atlas-size) * 2);
+            position: absolute;
+            border-radius: 0;
+            top: 50%;   
+            left: 50%;
+            transform: translate(-50%, -50%) translateZ(calc(var(--atlas-size) / -2));
+            transition: all 0.2s cubic-bezier(0.5, 1.7, 0.9, 1);
+            background-color: #CCC;
+        }
+
+        .atlas-attention .atlas-center {
+            width: calc(var(--atlas-size) * 1.25);
+            height: calc(var(--atlas-size) * 1.25);
+            border-radius: 50%;
+            background-color: #D05030;
+        }
+    </style>
+</head>
+<body>
+    <div class="atlas-container" id="container">
+        <div class="atlas-wobble" id="wobble">
+            <div class="atlas" id="atlas">
+                <div class="atlas-block atlas-top">
+                    <div class="atlas-face atlas-top-edge"></div>
+                    <div class="atlas-face atlas-right-edge"></div>
+                    <div class="atlas-face atlas-bottom-edge"></div>
+                    <div class="atlas-face atlas-left-edge"></div>
+                    <div class="atlas-face atlas-back-edge"></div>
+                </div>
+                <div class="atlas-block atlas-bottom">
+                    <div class="atlas-face atlas-top-edge"></div>
+                    <div class="atlas-face atlas-right-edge"></div>
+                    <div class="atlas-face atlas-bottom-edge"></div>
+                    <div class="atlas-face atlas-left-edge"></div>
+                    <div class="atlas-face atlas-back-edge"></div>
+                </div>
+                <div class="atlas-block atlas-left">
+                    <div class="atlas-face atlas-top-edge"></div>
+                    <div class="atlas-face atlas-right-edge"></div>
+                    <div class="atlas-face atlas-bottom-edge"></div>
+                    <div class="atlas-face atlas-left-edge"></div>
+                    <div class="atlas-face atlas-back-edge"></div>
+                </div>
+                <div class="atlas-block atlas-right">
+                    <div class="atlas-face atlas-top-edge"></div>
+                    <div class="atlas-face atlas-right-edge"></div>
+                    <div class="atlas-face atlas-bottom-edge"></div>
+                    <div class="atlas-face atlas-left-edge"></div>
+                    <div class="atlas-face atlas-back-edge"></div>
+                </div>
+                <div class="atlas-center"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Mouse-driven tilt offsets (used only in the listening state)
+        let mouseTiltX = 0;
+        let mouseTiltY = 0;
+
+        const stateData = {
+            sleeping: {
+                tension: 70,
+                friction: 0.75,
+                cx: (t) => 0,
+                cy: (t) => 0,
+                cz: (t) => 0,
+                pop: (t) => -0.001,
+            },
+            listening: {
+                tension: 120,
+                friction: 0.75,
+                // Base idle motion, plus a small nudge towards the mouse
+                cx: (t) => 5 * Math.pow(Math.sin(t / 1600), 1) - mouseTiltX * 2,
+                cy: (t) => -mouseTiltY * 2,
+                cz: (t) => 45,
+                pop: (t) => 2 + 0.25 * Math.pow(Math.sin(t / 2200), 1),
+            },
+        };
+
+        let currentState = 'sleeping';
+        let rotateX = 0;
+        let rotateY = 0;
+        let rotateZ = 0;
+        let pop = 0;
+        let velocityX = 0;
+        let velocityY = 0;
+        let velocityZ = 0;
+        let velocityPop = 0;
+        let lastTime = 0;
+
+        const wobbleEl = document.getElementById('wobble');
+        const atlasEl = document.getElementById('atlas');
+        const containerEl = document.getElementById('container');
+        const stateLabelEl = document.getElementById('stateLabel');
+
+        // Listen for messages from parent (tile hover)
+        window.addEventListener('message', function(e) {
+            if (!e.data) return;
+            if (e.data.type === 'hover') {
+                if (e.data.value && currentState === 'sleeping') {
+                    currentState = 'listening';
+                    atlasEl.classList.add('atlas-attention');
+                } else if (!e.data.value && currentState === 'listening') {
+                    currentState = 'sleeping';
+                    atlasEl.classList.remove('atlas-attention');
+                }
+            } else if (e.data.type === 'mousemove' && currentState === 'listening') {
+                const nx = (e.data.x - 0.5) * 2;  // -1..1
+                const ny = (e.data.y - 0.5) * 2;  // -1..1
+                const maxTilt = 8;
+                mouseTiltY = -nx * maxTilt;
+                mouseTiltX = ny * maxTilt;
+            }
+        });
+
+        function update(t) {
+            const data = stateData[currentState];
+
+            const tension = data.tension;
+            const friction = data.friction;
+
+            const targetX = data.cx(t);
+            const targetY = data.cy(t);
+            const targetZ = data.cz(t);
+            const targetPop = data.pop(t);
+
+            const dt = lastTime > 0 ? Math.min((t - lastTime) / 1000, 0.1) : 0;
+
+            velocityX += (targetX - rotateX) * tension * dt;
+            velocityY += (targetY - rotateY) * tension * dt;
+            velocityZ += (targetZ - rotateZ) * tension * dt;
+            velocityPop += (targetPop - pop) * tension * dt;
+
+            velocityX = Math.max(Math.min(velocityX * friction, 1000), -1000);
+            velocityY = Math.max(Math.min(velocityY * friction, 1000), -1000);
+            velocityZ = Math.max(Math.min(velocityZ * friction, 1000), -1000);
+            velocityPop = Math.max(Math.min(velocityPop * friction, 10), -10);
+
+            rotateX += velocityX * dt;
+            rotateY += velocityY * dt;
+            rotateZ += velocityZ * dt;
+            pop += velocityPop * dt;
+
+            lastTime = t;
+
+            wobbleEl.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg)`;
+
+            const w = pop * 0.5 + 4;
+            atlasEl.style.width = `calc(var(--atlas-size) * ${w})`;
+            atlasEl.style.height = `calc(var(--atlas-size) * ${w})`;
+
+            requestAnimationFrame(update);
+        }
+
+        requestAnimationFrame(update);
+    </script>
+</body>
+</html>
+
