@@ -14,7 +14,7 @@ Atlas is an LLM powered personal assistant. It’s my take on a Siri-like system
 
 As part of this, I tried every AI app on the App Store to see what ideas were out there. I concluded that they all suck and everyone is just copying ChatGPT blindly with no imagination. I mean seriously, even the logos all look the same:
 
-![](assets/images/atlas-apps.npng)
+![](assets/atlas-apps.png)
 
 So I wanted to see what would happen if someone tried to build something more opinionated and break all the expectations that OpenAI has established for the industry.
 

@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atlas Animation</title>
     <style>
+        :root {
+            --color-blackest: #171717;
+            --color-black: #282828;
+            --color-white: #CCCCCC;
+            --accent: #D05030;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -45,8 +52,8 @@
 
         .atlas-block,
         .atlas-face {
-            background-color: #CCC;
-            outline: 1px solid #CCC;
+            background-color: var(--color-white);
+            outline: 1px solid var(--color-white);
             outline-offset: 0;
             transform-style: preserve-3d;
             position: absolute;
@@ -54,7 +61,7 @@
 
         .atlas-attention .atlas-block,
         .atlas-attention .atlas-face {
-            outline: 1px solid #000;
+            outline: 1px solid var(--color-blackest);
         }
 
         .atlas-bottom-edge {
@@ -138,14 +145,14 @@
             left: 50%;
             transform: translate(-50%, -50%) translateZ(calc(var(--atlas-size) / -2));
             transition: all 0.2s cubic-bezier(0.5, 1.7, 0.9, 1);
-            background-color: #CCC;
+            background-color: var(--color-white);
         }
 
         .atlas-attention .atlas-center {
             width: calc(var(--atlas-size) * 1.25);
             height: calc(var(--atlas-size) * 1.25);
             border-radius: 50%;
-            background-color: #D05030;
+            background-color: var(--accent);
         }
     </style>
 </head>
@@ -240,6 +247,14 @@
                 const maxTilt = 8;
                 mouseTiltY = -nx * maxTilt;
                 mouseTiltX = ny * maxTilt;
+            } else if (e.data.type === 'theme') {
+                const root = document.documentElement;
+                if (e.data.vars) {
+                    for (const [key, value] of Object.entries(e.data.vars)) {
+                        root.style.setProperty(key, value);
+                    }
+                }
+                root.classList.toggle('rainbow', !!e.data.rainbow);
             }
         });
 

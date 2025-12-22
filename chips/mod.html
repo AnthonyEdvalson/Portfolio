@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mod Chip</title>
     <style>
+        :root {
+            --color-blackest: #171717;
+            --color-black: #282828;
+            --color-white: #CCCCCC;
+            --accent: #D05030;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -40,19 +47,19 @@
         }
 
         .node {
-            fill: #282828;
+            fill: var(--color-black);
         }
 
         .edge {
             fill: none;
-            stroke: #282828;
+            stroke: var(--color-black);
             opacity: 0.5;
             stroke-width: 1.5;
             stroke-linecap: round;
         }
 
         .arrow {
-            fill: #282828;
+            fill: var(--color-black);
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -172,11 +179,21 @@
     });
 
     window.addEventListener('message', function(e) {
-        if (!e.data || e.data.type !== 'hover') return;
-        if (e.data.value) {
-            document.body.classList.add('hovering');
-        } else {
-            document.body.classList.remove('hovering');
+        if (!e.data) return;
+        if (e.data.type === 'hover') {
+            if (e.data.value) {
+                document.body.classList.add('hovering');
+            } else {
+                document.body.classList.remove('hovering');
+            }
+        } else if (e.data.type === 'theme') {
+            const root = document.documentElement;
+            if (e.data.vars) {
+                for (const [key, value] of Object.entries(e.data.vars)) {
+                    root.style.setProperty(key, value);
+                }
+            }
+            root.classList.toggle('rainbow', !!e.data.rainbow);
         }
     });
     </script>

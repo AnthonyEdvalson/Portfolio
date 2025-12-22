@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blocks Animation</title>
     <style>
+        :root {
+            --color-blackest: #171717;
+            --color-black: #282828;
+            --color-white: #CCCCCC;
+            --accent: #D05030;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -47,40 +54,40 @@
             position: absolute;
             width: var(--block-size);
             height: var(--block-size);
-            background-color: #CCC;
-            outline: 1px solid #222;
+            background-color: var(--color-white);
+            outline: 1px solid var(--color-blackest);
             outline-offset: -0.5px;
             backface-visibility: hidden;
         }
 
         .block-bottom {
             transform: rotateX(-90deg) translateZ(calc(var(--block-size) / 2));
-            background-color: #AAA;
+            background-color: color-mix(in srgb, var(--color-white) 80%, var(--color-black));
         }
 
         .block-front {
             transform: translateZ(calc(var(--block-size) / 2));
-            background-color: #DDD;
+            background-color: color-mix(in srgb, var(--color-white) 100%, white 10%);
         }
 
         .block-left {
             transform: rotateY(-90deg) translateZ(calc(var(--block-size) / 2));
-            background-color: #CCC;
+            background-color: var(--color-white);
         }
 
         .block-right {
             transform: rotateY(90deg) translateZ(calc(var(--block-size) / 2));
-            background-color: #CCC;
+            background-color: var(--color-white);
         }
 
         .block-back {
             transform: rotateY(180deg) translateZ(calc(var(--block-size) / 2));
-            background-color: #CCC;
+            background-color: var(--color-white);
         }
 
         .block-top {
             transform: rotateX(90deg) translateZ(calc(var(--block-size) / 2));
-            background-color: #CCC;
+            background-color: var(--color-white);
         }
     </style>
 </head>
@@ -307,23 +314,33 @@
         }
 
         window.addEventListener('message', function(e) {
-            if (!e.data || e.data.type !== 'hover') return;
-            if (e.data.value) {
-                hovering = true;
-                if (state === 'empty') {
-                    state = 'building';
-                    buildStartTime = performance.now();
+            if (!e.data) return;
+            if (e.data.type === 'hover') {
+                if (e.data.value) {
+                    hovering = true;
+                    if (state === 'empty') {
+                        state = 'building';
+                        buildStartTime = performance.now();
+                    }
+                    else if (state === 'paused') {
+                        state = 'rotating';
+                        lastTime = performance.now();
+                        requestAnimationFrame(animate);
+                    }
+                } else {
+                    hovering = false;
+                    if (state === 'rotating') {
+                        state = 'paused';
+                    }
                 }
-                else if (state === 'paused') {
-                    state = 'rotating';
-                    lastTime = performance.now();
-                    requestAnimationFrame(animate);
+            } else if (e.data.type === 'theme') {
+                const root = document.documentElement;
+                if (e.data.vars) {
+                    for (const [key, value] of Object.entries(e.data.vars)) {
+                        root.style.setProperty(key, value);
+                    }
                 }
-            } else {
-                hovering = false;
-                if (state === 'rotating') {
-                    state = 'paused';
-                }
+                root.classList.toggle('rainbow', !!e.data.rainbow);
             }
         });
 

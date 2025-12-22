@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Map</title>
     <style>
+        :root {
+            --color-blackest: #171717;
+            --color-black: #282828;
+            --color-white: #CCCCCC;
+            --accent: #D05030;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -39,9 +46,36 @@
         let mapWidth = 0;
         let mapHeight = 0;
 
-        const OCEAN_BASE = { r: 18, g: 18, b: 18 };
-        const LAND_BASE = { r: 34, g: 34, b: 34 };
-        const ACCENT = { r: 208, g: 80, b: 48 }; // #D05030
+        function parseColor(str) {
+            str = str.trim();
+            if (str.startsWith('#')) {
+                const hex = str.slice(1);
+                if (hex.length === 3) {
+                    return {
+                        r: parseInt(hex[0] + hex[0], 16),
+                        g: parseInt(hex[1] + hex[1], 16),
+                        b: parseInt(hex[2] + hex[2], 16)
+                    };
+                }
+                return {
+                    r: parseInt(hex.slice(0, 2), 16),
+                    g: parseInt(hex.slice(2, 4), 16),
+                    b: parseInt(hex.slice(4, 6), 16)
+                };
+            }
+            return { r: 34, g: 34, b: 34 };
+        }
+
+        function getThemeColors() {
+            const style = getComputedStyle(document.documentElement);
+            return {
+                OCEAN_BASE: parseColor(style.getPropertyValue('--color-blackest') || '#171717'),
+                LAND_BASE: parseColor(style.getPropertyValue('--color-black') || '#282828'),
+                ACCENT: parseColor(style.getPropertyValue('--accent') || '#D05030')
+            };
+        }
+
+        let { OCEAN_BASE, LAND_BASE, ACCENT } = getThemeColors();
 
         const CELL_SIZE = 12;
         const GAP = 2;
@@ -260,8 +294,19 @@
         }
 
         window.addEventListener('message', function(e) {
-            if (!e.data || e.data.type !== 'hover') return;
-            isHovering = e.data.value;
+            if (!e.data) return;
+            if (e.data.type === 'hover') {
+                isHovering = e.data.value;
+            } else if (e.data.type === 'theme') {
+                const root = document.documentElement;
+                if (e.data.vars) {
+                    for (const [key, value] of Object.entries(e.data.vars)) {
+                        root.style.setProperty(key, value);
+                    }
+                }
+                root.classList.toggle('rainbow', !!e.data.rainbow);
+                ({ OCEAN_BASE, LAND_BASE, ACCENT } = getThemeColors());
+            }
         });
 
         window.addEventListener('resize', resize);

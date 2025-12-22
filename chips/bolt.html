@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bolt Builder</title>
     <style>
+        :root {
+            --color-blackest: #171717;
+            --color-black: #282828;
+            --color-white: #CCCCCC;
+            --accent: #D05030;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -32,7 +39,7 @@
             height: 100%;
             position: relative;
             overflow: hidden;
-            outline: 1px solid #282828
+            outline: 1px solid var(--color-black);
         }
 
         .component {
@@ -50,14 +57,14 @@
         }
 
         .component--header {
-            background: #282828;
+            background: var(--color-black);
         }
 
         .component--text {
             background: repeating-linear-gradient(
                 to bottom,
-                #888 0px,
-                #888 2px,
+                color-mix(in srgb, var(--color-black) 50%, var(--color-white)) 0px,
+                color-mix(in srgb, var(--color-black) 50%, var(--color-white)) 2px,
                 transparent 2px,
                 transparent 5px
             );
@@ -65,23 +72,23 @@
         }
 
         .component--image {
-            background: #999;
+            background: color-mix(in srgb, var(--color-black) 50%, var(--color-white));
         }
 
         .component--button {
-            background: #D05030;
+            background: var(--accent);
         }
 
         .component--card {
-            background: #b8b8b8;
+            background: color-mix(in srgb, var(--color-black) 20%, var(--color-white));
         }
 
         .component--nav {
-            background: #383838;
+            background: color-mix(in srgb, var(--color-black) 80%, var(--color-white));
         }
 
         .component--footer {
-            background: #282828;
+            background: var(--color-black);
         }
     </style>
 </head>
@@ -327,6 +334,14 @@
                     isHovering = false;
                     pause();
                 }
+            } else if (e.data.type === 'theme') {
+                const root = document.documentElement;
+                if (e.data.vars) {
+                    for (const [key, value] of Object.entries(e.data.vars)) {
+                        root.style.setProperty(key, value);
+                    }
+                }
+                root.classList.toggle('rainbow', !!e.data.rainbow);
             }
         });
     </script>

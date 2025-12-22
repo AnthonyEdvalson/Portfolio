@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Owl REPL</title>
     <style>
+        :root {
+            --color-blackest: #171717;
+            --color-black: #282828;
+            --color-white: #CCCCCC;
+            --accent: #D05030;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -50,13 +57,13 @@
         }
 
         .prompt {
-            color: #888;
+            color: color-mix(in srgb, var(--color-black) 50%, var(--color-white));
             margin-right: 0.5em;
             user-select: none;
         }
 
         .code {
-            color: #333;
+            color: var(--color-black);
             white-space: pre;
         }
 
@@ -64,7 +71,7 @@
             display: inline-block;
             width: 0.6em;
             height: 1.1em;
-            background-color: #333;
+            background-color: var(--color-black);
             margin-left: 1px;
             vertical-align: text-bottom;
             opacity: 0;
@@ -92,18 +99,18 @@
         }
 
         .output {
-            color: #666;
+            color: color-mix(in srgb, var(--color-black) 70%, var(--color-white));
             white-space: pre;
         }
 
-        .token-keyword { color: #e85d04; }
-        .token-number { color: #333; }
-        .token-string { color: #e85d04; }
-        .token-operator { color: #333; opacity: 0.5; }
-        .token-owl-operator { color: #e85d04; }
-        .token-function { color: #e85d04; }
-        .token-variable { color: #333; }
-        .token-comment { color: #333; opacity: 0.4; }
+        .token-keyword { color: var(--accent); }
+        .token-number { color: var(--color-black); }
+        .token-string { color: var(--accent); }
+        .token-operator { color: var(--color-black); opacity: 0.5; }
+        .token-owl-operator { color: var(--accent); }
+        .token-function { color: var(--accent); }
+        .token-variable { color: var(--color-black); }
+        .token-comment { color: var(--color-black); opacity: 0.4; }
     </style>
 </head>
 <body>
@@ -149,8 +156,8 @@
     ];
 
     const config = {
-        typeSpeed: 70,
-        pauseAfterType: 400,
+        typeSpeed: 40,
+        pauseAfterType: 600,
         pauseAfterOutput: 1800,
         pauseBetween: 300,
         maxLines: 20,
@@ -341,15 +348,25 @@
     createOutputLine().output.textContent = "[[Owl 1.3 REPL]]";
 
     window.addEventListener('message', function(e) {
-        if (!e.data || e.data.type !== 'hover') return;
-        if (e.data.value) {
-            isHovering = true;
-            document.body.classList.add('hovering');
-            start();
-        } else {
-            isHovering = false;
-            document.body.classList.remove('hovering');
-            pause();
+        if (!e.data) return;
+        if (e.data.type === 'hover') {
+            if (e.data.value) {
+                isHovering = true;
+                document.body.classList.add('hovering');
+                start();
+            } else {
+                isHovering = false;
+                document.body.classList.remove('hovering');
+                pause();
+            }
+        } else if (e.data.type === 'theme') {
+            const root = document.documentElement;
+            if (e.data.vars) {
+                for (const [key, value] of Object.entries(e.data.vars)) {
+                    root.style.setProperty(key, value);
+                }
+            }
+            root.classList.toggle('rainbow', !!e.data.rainbow);
         }
     });
     </script>

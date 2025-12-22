@@ -72,6 +72,26 @@
                 document.documentElement.className = themeName;
                 document.getElementById('favicon').href = `favicon/fav-${themeName}.png`;
                 document.getElementById('theme-color').content = getComputedStyle(document.documentElement).getPropertyValue("--base");
+                broadcastTheme();
+            }
+
+            function broadcastTheme() {
+                const style = getComputedStyle(document.documentElement);
+                const themeData = {
+                    type: "theme",
+                    vars: {
+                        "--color-blackest": style.getPropertyValue("--color-blackest").trim(),
+                        "--color-black": style.getPropertyValue("--color-black").trim(),
+                        "--color-white": style.getPropertyValue("--color-white").trim(),
+                        "--accent": style.getPropertyValue("--accent").trim(),
+                    },
+                    rainbow: document.documentElement.classList.contains("rainbow")
+                };
+                document.querySelectorAll("iframe").forEach(function(iframe) {
+                    if (iframe.contentWindow) {
+                        iframe.contentWindow.postMessage(themeData, "*");
+                    }
+                });
             }
 
             window.addEventListener('load', () => {
@@ -108,6 +128,14 @@
         </script>
         <script src="grid-data.js"></script>
         <script>
+            const THEMES = [
+                "orange",
+                "blue",
+                "teal",
+                "rose",
+                "rainbow"
+            ];
+
             function renderItemMarkdown(markdown) {
                 const renderer = new marked.Renderer();
 
@@ -181,6 +209,9 @@
                         chipEl.height = "100%";
                         chipEl.frameBorder = "0";
                         chipEl.setAttribute("allowtransparency", "true");
+                        chipEl.addEventListener("load", function() {
+                            broadcastTheme();
+                        });
                         tile.appendChild(chipEl);
 
                         (function(iframe, tileEl) {
@@ -236,6 +267,25 @@
                         var subtitleEl = document.createElement("p");
                         subtitleEl.textContent = item.subtitle;
                         contentEl.appendChild(subtitleEl);
+                        anyContent = true;
+                    }
+
+                    if (item.themes) {
+                        var themesEl = document.createElement("div");
+                        themesEl.className = "themes";
+                        const themesElInner = document.createElement("div");
+                        themesElInner.className = "themes__inner";
+                        THEMES.forEach(theme => {
+                            var themeEl = document.createElement("div");
+                            themeEl.classList.add("theme");
+                            themeEl.classList.add(`theme--${theme}`);
+                            themeEl.onclick = () => {
+                                setTheme(theme);
+                            };
+                            themesElInner.appendChild(themeEl);
+                        });
+                        themesEl.appendChild(themesElInner);
+                        contentEl.appendChild(themesEl);
                         anyContent = true;
                     }
 

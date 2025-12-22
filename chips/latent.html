@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Latent Waveform</title>
     <style>
+        :root {
+            --color-blackest: #171717;
+            --color-black: #282828;
+            --color-white: #CCCCCC;
+            --accent: #D05030;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         html, body {
@@ -165,7 +172,9 @@
             const barWidth = drawWidth * (1 - totalGapRatio) / numBars;
             const gap = drawWidth * totalGapRatio / (numBars - 1);
             
-            ctx.fillStyle = `rgba(20, 20, 20, ${lerp(0.55, 0.7, hover)})`;
+            const style = getComputedStyle(document.documentElement);
+            const barColor = style.getPropertyValue('--color-black').trim() || '#282828';
+            ctx.fillStyle = barColor;
             
             for (let i = 0; i < numBars; i++) {
                 const barHeight = getBarHeight(i, time, currentWaveform) * maxBarHeight;
@@ -184,6 +193,14 @@
             } else if (e.data.type === "mousemove") {
                 mouseTarget.x = clamp(e.data.x, 0, 1);
                 mouseTarget.y = clamp(e.data.y, 0, 1);
+            } else if (e.data.type === "theme") {
+                const root = document.documentElement;
+                if (e.data.vars) {
+                    for (const [key, value] of Object.entries(e.data.vars)) {
+                        root.style.setProperty(key, value);
+                    }
+                }
+                root.classList.toggle('rainbow', !!e.data.rainbow);
             }
         });
 

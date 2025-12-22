@@ -6,6 +6,7 @@ Please direct all complaints to Nile the lobster, he's a good listener: 🦞
 */
 
 @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comic+Sans+MS:wght@400;700&family=Comic+Sans:wght@400;700&family=Comic+Neue:wght@400;700&display=swap');
 
 * {
     box-sizing: border-box;
@@ -18,7 +19,10 @@ Please direct all complaints to Nile the lobster, he's a good listener: 🦞
     --color-black: #282828;
     --color-white: #CCCCCC;
     --color-orange: #D05030;
-    
+    --color-blue: #336dd3;
+    --color-teal: #1CB853;
+    --color-rose: #d3699c;
+
     --bg: var(--color-black);
     --fg: var(--color-white);
     --accent: var(--color-orange);
@@ -30,6 +34,34 @@ html {
     font-family: "Chakra Petch", "SF Mono", monospace;
     font-size: 14px;
     color-scheme: dark;
+}
+
+html.orange {
+    --accent: var(--color-orange);
+}
+
+html.blue {
+    --accent: var(--color-blue);
+    --color-blackest: #1d1e20;
+    --color-black: #25272a;
+    --color-white: #d1d1d1;
+}
+
+html.teal {
+    --accent: var(--color-teal);
+}
+
+html.rose {
+    --accent: var(--color-rose);
+    --color-blackest: #221e20;
+    --color-black: #362d32;
+    --color-white: #bfaeb7;
+}
+
+html.rainbow {
+    --accent: #00fbff;
+    --color-black: #281d8d;
+    --color-white: #f7f384;
 }
 
 body {
@@ -118,13 +150,12 @@ ul {
 }
 
 .tile--orange {
-    --bg: var(--color-orange);
+    --bg: var(--accent);
     --fg: var(--color-black);
-    --accent: var(--color-white);
     background: var(--bg);
     color: var(--fg);
     box-shadow: 
-        0 0 30px rgba(208, 80, 48, 0.2),
+        0 0 30px color-mix(in srgb, var(--accent) 20%, transparent),
         inset 0 0 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -262,21 +293,18 @@ ul {
     --bg: var(--color-black);
     --fg: var(--color-white);
     --fg-alt: var(--color-white);
-    --accent: var(--color-orange);
 }
 
 .modal--orange {
     --bg: var(--color-black);
     --fg: var(--color-white);
-    --fg-alt: var(--color-orange);
-    --accent: var(--color-orange);
+    --fg-alt: var(--accent);
 }
 
 .modal--white {
     --bg: var(--color-white);
     --fg: var(--color-black);
     --fg-alt: var(--color-black);
-    --accent: var(--color-orange);
 }
 
 .modal__phantom {
@@ -317,11 +345,13 @@ ul {
 }
 
 .modal__content {
-    position: relative;
+    position: absolute;
     z-index: 1;
     width: 100%;
     max-width: 700px;
     padding: 80px 24px 80px;
+    display: flex;
+    flex-direction: column;
 }
 
 .modal__code {
@@ -545,4 +575,151 @@ ul {
 
 .modal__body tbody tr:nth-child(even) {
     background: color-mix(in srgb, var(--fg) 3%, transparent);
+}
+
+.themes {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    max-width: 20px;
+    transition: max-width 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.themes__inner {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 200px;
+}
+
+.themes:hover {
+    max-width: 150px;
+}
+
+.themes .theme {
+    width: 20px;
+    height: 20px;
+}
+
+.theme--orange {
+    background-color: var(--color-orange);
+}
+
+.theme--blue {
+    background-color: var(--color-blue);
+}
+
+.theme--teal {
+    background-color: var(--color-teal);
+}
+
+.theme--rose {
+    background-color: var(--color-rose);
+}
+
+.theme--rainbow {
+    background: linear-gradient(45deg in oklab, #EF476F 20%, #FFD166 40%, #06D6A0 60%, #118AB2 80%);
+}
+
+html.orange .theme--orange,
+html.blue .theme--blue,
+html.teal .theme--teal,
+html.rose .theme--rose,
+html.rainbow .theme--rainbow {
+    order: -1;
+}
+
+/* RAINBOW */
+
+.rainbow body, /* ♫ Remember we were here ♫ When you get back ♫ Remember we were never found ♫ */
+.rainbow .modal__phantom {
+    background-size: 100% 125vh;
+    background-image: repeating-linear-gradient(to bottom in oklab, #c83d69 0%, #e2de30 20%, #36d49c 40%, #53c1e0 60%, #964df5 80%, #c83d69 100%);
+    /* animation-duration: 15s; */
+    /* animation-iteration-count: infinite; */
+    /* animation-name: rainbow; */
+    /* animation-timing-function: linear; */
+
+    font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive;
+}
+
+.rainbow .modal__content {
+    background: var(--bg);
+}
+
+/* @keyframes rainbow {
+    0% {
+		background-position: 0% 0%;
+	}
+	100% {
+		background-position: 0% 125vh;
+	}
+} */
+
+html.rainbow .tile--title h2 {
+    font-family: Impact, "Anton", sans-serif;
+    color: #24c0fd;
+    -webkit-text-stroke: 0.01em #0000aa;
+    filter: progid:DXImageTransform.Microsoft.Glow(Color=#0000aa,Strength=1);
+    text-shadow: 0.13em -0.13em 0px #0000aa;
+    letter-spacing: -0.1em;
+}
+
+html.rainbow .tile:not(.tile--title) h2 {
+    transform: translateY(-60%) skew(0, -10deg) scale(1, 1.5);
+    letter-spacing: -0.01em;
+    font-family: Impact, "Anton", sans-serif;
+    background: linear-gradient(to bottom, #4222be 0%, #a62cc1 73%);
+    -webkit-text-stroke: 0.01em #B28FFD;
+    filter: progid:DXImageTransform.Microsoft.Glow(Color=#b28ffd, Strength=1);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+html.rainbow .tile__content p {
+    font-family: Times, 'Times New Roman', serif;
+    font-weight: normal;
+    color: #2F5485;
+    text-shadow: 0.03em 0.03em 0px rgba(0,0,0,0.5);
+    transform: scale(1, 1.5);
+}
+
+html.rainbow .tile {
+    background-image: linear-gradient(45deg in oklab, #EF476F 20%, #FFD166 40%, #06D6A0 60%, #118AB2 80%);
+
+    background-attachment: fixed;
+}
+
+.rainbow .modal__title,
+.rainbow .modal__subtitle,
+.rainbow .modal a,
+.rainbow .modal h1,
+.rainbow .modal h2,
+.rainbow .modal h3,
+.rainbow .modal h4,
+.rainbow .modal h5,
+.rainbow .modal h6,
+.rainbow a {
+    background-image: linear-gradient(200deg in oklab, #EF476F 20%, #FFD166 40%, #06D6A0 60%, #118AB2 80%);
+    background-attachment: fixed;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.rainbow .modal__title::before,
+.rainbow .modal__close {
+    background-image: linear-gradient(45deg in oklab, #EF476F 20%, #FFD166 40%, #06D6A0 60%, #118AB2 80%);
+}
+
+.rainbow .modal__body,
+.rainbow .modal h1,
+.rainbow .modal h2,
+.rainbow .modal h3,
+.rainbow .modal h4,
+.rainbow .modal h5,
+.rainbow .modal h6 {
+    font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", cursive;
 }

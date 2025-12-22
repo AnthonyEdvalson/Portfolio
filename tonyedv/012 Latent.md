@@ -34,7 +34,7 @@ This was a fun mini-project to see just how much I can compress the sounds witho
 
 When making the system, my first realization was that if we only want to model timbre, then we don’t care at all about things changing over time. The only thing that matters is the frequencies of the sound. This kind of thing is perfect for the [Fast Fourier Transform](https://en.wikipedia.org/wiki/Fast_Fourier_transform) (FFT). The FFT essentially extracts the frequencies that make up a sound, and lets you work with the frequencies instead of individual samples in time. 
 
-![[assets/latent-fft.png]]
+![](assets/latent-fft.png)
 
 After applying the FFT, it's easy to throw out lots of information. First, is the phase information. This essentially throws out the data that tells when sounds start or end, which makes up half of the coefficients produced by the FFT. This turns the audio into a monotonous drone, which is fine because the original sound should already be a droning sound. This is equivalent to applying a heavy reverb to the audio. All the same sounds are there, but they're smeared out over time.
 
@@ -44,7 +44,7 @@ Lastly, we can throw out most of the high frequency data. The FFT gives us inten
 
 Then, the values are converted to decibels and fit into the range 0 to 1, since that gives a perceptually linear output, which makes the loss functions align with human hearing.
 
-![[assets/latent-fft2.png]]
+![](assets/latent-fft2.png)
 
 This takes the data from 176,400 audio samples all the way down to 1,233 values, a 99.5% reduction. For most audio clips, there is no audible difference in the sound after being compressed in this way.
 
@@ -54,7 +54,7 @@ I later learned this is basically what [MP3](https://en.wikipedia.org/wiki/MP3#E
 
 1,233 values is small enough for us to work with, and the reduced dimensionality means that training the model doesn't take long at all, making experimentation quick and easy. Here is the general structure:
 
-![[assets/latent-model.png]]
+![](assets/latent-model.png)
 
 - `UPSAMPLE(X, Y)` means that it is upsampling to X times larger, and padding with Y zeros.
 - All `CONV_1D` layers use same size padding.
