@@ -151,6 +151,6 @@ var GRID_DATA = [
     "contentInGrid": "true",
     "order": "999",
     "source": "tonyedv/999 Footer.md",
-    "markdown": "<span class=\"em\"></span>\n\n[inkedin.com/in/tonyedvalson](https://www.linkedin.com/in/tonyedvalson/)\n\nSite and styes all created by me. No frameworks, no fnord, no templates. Source code is on [GitHub](https://github.com/AnthonyEdvalson/Portfolio)."
+    "markdown": "<span class=\"em\"></span>\n\n[linkedin.com/in/tonyedvalson](https://www.linkedin.com/in/tonyedvalson/)\n\nSite and styes all created by me. No frameworks, no fnord, no templates. Source code is on [GitHub](https://github.com/AnthonyEdvalson/Portfolio)."
   }
 ];
