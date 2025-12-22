@@ -5,7 +5,7 @@ code: PRJ.065
 title: MIPS in Factorio
 category: Project
 subtitle: Creating a microprocessor in a video game
-date: "2019"
+disable: true
 ---
 > INCOMPLETE
 

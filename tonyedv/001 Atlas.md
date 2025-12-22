@@ -7,7 +7,6 @@ subtitle: LLM powered personal assistant
 height: 5
 chip: atlas
 category: LLMs
-date: "2025"
 ---
 
 Atlas is an LLM powered personal assistant. It’s my take on a Siri-like system that I spent about a year building and iterating on. I had a few goals with this project, but the main ones were to push the boundaries on AI systems and figure out the best way to build AI products.

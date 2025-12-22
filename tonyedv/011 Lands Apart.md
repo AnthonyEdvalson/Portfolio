@@ -7,6 +7,7 @@ category: Project
 subtitle: Expansive Fantasy Setting
 chip: dnd
 height: 5
+disable: true
 ---
 > INCOMPLETE
 

@@ -185,7 +185,7 @@
                 for (var i = 0; i < gridData.length; i++) {
                     var item = gridData[i];
 
-                    var isClickable = !item.contentInGrid && item.markdown;
+                    var isClickable = !item.contentInGrid && item.markdown && !item.disable;
 
                     var classes = ["tile"];
                     classes.push(`col-span-${item.width}`);
@@ -435,7 +435,7 @@
             let screensaverTimeout = null;
             let screensaverOn = false;
             let screensaverScriptsLoaded = false;
-            const timeout = 10 * 1000;
+            const timeout = 10 * 60 * 1000;
 
             window.addEventListener('mousemove', (e) => {
                 stopScreensaver();
