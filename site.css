@@ -309,13 +309,16 @@ ul {
 html.modal-open,
 html.modal-open body {
     position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
+    touch-action: none;
 }
 
 .modal {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -325,6 +328,7 @@ html.modal-open body {
     justify-content: center;
     overflow-y: auto;
     overscroll-behavior: contain;
+    touch-action: pan-y;
     background: transparent;
 }
 
