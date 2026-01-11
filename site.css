@@ -841,9 +841,6 @@ html.rainbow .tile {
     flex-direction: column;
     gap: 2em;
     z-index: -1;
-    position: fixed;
-    bottom: 40px;
-    left: 20px;
 }
 
 #secret-pixel {

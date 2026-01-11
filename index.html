@@ -697,10 +697,10 @@
             window.addEventListener('scroll', () => {
                 let maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 let subfooter = document.getElementById('subfooter-msg');
-                let i = Math.floor((window.scrollY - maxScroll - 50) / 50);
+                let i = Math.floor((window.scrollY - maxScroll - 30) / 50);
                 console.log(window.scrollY, maxScroll, i);
                 if (i < 0) {
-                    subfooter.innerText = "";
+                    subfooter.innerHTML = "&nbsp;";
                 }
                 else if (i >= msgs.length) {
                     if (leaving) {
