@@ -7,7 +7,9 @@ category: Project
 subtitle: LLM Assisted Web Development
 chip: bolt
 height: 3
+
 ---
+
 > 2025 note: this was written before coding agents were a thing, so this all seems really obvious now. Most of this tech is pretty standard now (well except the dummy components, which I still think are really neat)
 > 
 > Also, Bolt is now the name of an actual product that builds websites. This is 100% a coincidence. I have no relation to that company.

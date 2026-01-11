@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIPS Instruction</title>
+    <style>
+        :root {
+            --color-blackest: #171717;
+            --color-black: #282828;
+            --color-white: #CCCCCC;
+            --accent: #D05030;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5vw;
+            padding: 2vw;
+        }
+
+        .panel {
+            padding: 2vw 2.5vw;
+            background: var(--color-black);
+        }
+
+        .panel--instruction {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 92vw;
+        }
+
+        .panel--state {
+            display: flex;
+            gap: 1.5vw;
+        }
+
+        .state-block {
+            background: var(--color-black);
+            padding: 1.5vw 2vw;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3vw;
+            flex: 1;
+        }
+
+        .state-block__header {
+            font-size: 2.4vw;
+            color: var(--color-white);
+            opacity: 0.4;
+            margin-bottom: 0.5vw;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-align: center;
+        }
+
+        #registers-panel,
+        #memory-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3vw;
+        }
+
+        .instruction {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .instruction.visible {
+            opacity: 1;
+        }
+
+        .instruction.fade-out {
+            opacity: 0;
+        }
+
+        .group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            transition: margin 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .instruction.separated .group {
+            margin: 0 0.8vw;
+        }
+
+        .instruction.separated .group:first-child {
+            margin-left: 0;
+        }
+
+        .instruction.separated .group:last-child {
+            margin-right: 0;
+        }
+
+        .bits {
+            display: flex;
+            font-size: 3.5vw;
+            color: var(--color-white);
+            line-height: 1;
+        }
+
+        .bit {
+            width: 2.1vw;
+            text-align: center;
+            opacity: 0.5;
+        }
+
+        .label {
+            font-size: 3vw;
+            color: var(--color-white);
+            margin-top: 0.5vw;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .instruction.labeled .label {
+            opacity: 1;
+        }
+
+        .register {
+            display: flex;
+            justify-content: space-between;
+            font-size: 3vw;
+            line-height: 1.3;
+        }
+
+        .register__name {
+            color: var(--color-white);
+            opacity: 0.5;
+        }
+
+        .register__value {
+            color: var(--color-white);
+        }
+
+        .register.updated .register__value {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel panel--instruction" id="instruction-panel"></div>
+        <div class="panel--state">
+            <div class="state-block">
+                <div class="state-block__header">Registers</div>
+                <div id="registers-panel"></div>
+            </div>
+            <div class="state-block">
+                <div class="state-block__header">Memory</div>
+                <div id="memory-panel"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Register state - persists across instructions
+        const registerState = {
+            $t0: 1,  // Current Fibonacci number
+            $t1: 0,  // Previous Fibonacci number
+            $t2: 0,  // Memory address counter (0, 4, 8, 12, 0, ...)
+            PC: 0,
+        };
+
+        // Memory state - 4 locations for rolling writes
+        const memoryState = {
+            '0x00': 0,
+            '0x04': 0,
+            '0x08': 0,
+            '0x0C': 0,
+        };
+
+        // Helper to get memory key from $t2 address value
+        function memKey() {
+            const addr = registerState.$t2;
+            return '0x' + addr.toString(16).toUpperCase().padStart(2, '0');
+        }
+
+        // Fibonacci sequence with rolling memory writes
+        // Uses memory as temp storage for the swap trick
+        const instructions = [
+            {
+                // sw $t0, 0($t2) - store current fib to memory at $t2
+                bits: "10101101010010000000000000000000",
+                groups: [
+                    { end: 6, label: "sw" },
+                    { end: 11, label: "$t2" },
+                    { end: 16, label: "$t0" },
+                    { end: 32, label: "0" },
+                ],
+                update: () => ({}),
+                memUpdate: () => ({ [memKey()]: registerState.$t0 }),
+            },
+            {
+                // add $t0, $t0, $t1 - compute next fib
+                bits: "00000001000010010100000000100000",
+                groups: [
+                    { end: 6, label: "R" },
+                    { end: 11, label: "$t0" },
+                    { end: 16, label: "$t1" },
+                    { end: 21, label: "$t0" },
+                    { end: 26, label: "0" },
+                    { end: 32, label: "add" },
+                ],
+                update: () => ({ $t0: registerState.$t0 + registerState.$t1 }),
+            },
+            {
+                // lw $t1, 0($t2) - load old fib value back (swap trick)
+                bits: "10001101010010010000000000000000",
+                groups: [
+                    { end: 6, label: "lw" },
+                    { end: 11, label: "$t2" },
+                    { end: 16, label: "$t1" },
+                    { end: 32, label: "0" },
+                ],
+                update: () => ({ $t1: memoryState[memKey()] }),
+            },
+            {
+                // addi $t2, $t2, 4 - advance memory pointer
+                bits: "00100001010010100000000000000100",
+                groups: [
+                    { end: 6, label: "addi" },
+                    { end: 11, label: "$t2" },
+                    { end: 16, label: "$t2" },
+                    { end: 32, label: "4" },
+                ],
+                update: () => ({ $t2: registerState.$t2 + 4 }),
+            },
+            {
+                // andi $t2, $t2, 15 - wrap address (mod 16)
+                bits: "00110001010010100000000000001111",
+                groups: [
+                    { end: 6, label: "andi" },
+                    { end: 11, label: "$t2" },
+                    { end: 16, label: "$t2" },
+                    { end: 32, label: "0xF" },
+                ],
+                update: () => ({ $t2: registerState.$t2 & 0xF }),
+            },
+            {
+                // j 0 - loop back to start
+                bits: "00001000000000000000000000000000",
+                groups: [
+                    { end: 6, label: "j" },
+                    { end: 32, label: "0x0" },
+                ],
+                update: () => ({ PC: -4 }),  // Will become 0 after PC += 4
+            },
+        ];
+
+        const config = {
+            separateDelay: 300,
+            labelDelay: 600,
+            holdTime: 1000,
+            fadeTime: 300,
+        };
+
+        const instructionPanel = document.getElementById('instruction-panel');
+        const registersPanel = document.getElementById('registers-panel');
+        const memoryPanel = document.getElementById('memory-panel');
+        let isHovering = false;
+        let currentIndex = 0;
+        let timeoutId = null;
+        let instructionEl = null;
+        let registerEls = {};
+        let memoryEls = {};
+
+        function toHex(n) {
+            return '0x' + n.toString(16).toUpperCase();
+        }
+
+        function randomHexLike(finalValue) {
+            const finalHex = toHex(finalValue);
+            const len = finalHex.length - 2; // exclude "0x"
+            let rand = '';
+            for (let i = 0; i < len; i++) {
+                rand += '0123456789ABCDEF'[Math.floor(Math.random() * 16)];
+            }
+            return '0x' + rand;
+        }
+
+        function glitchValue(valueEl, finalValue) {
+            const flickers = 2;
+            const flickerTime = 50;
+            let count = 0;
+
+            function flicker() {
+                if (count < flickers) {
+                    valueEl.textContent = randomHexLike(finalValue);
+                    count++;
+                    setTimeout(flicker, flickerTime);
+                } else {
+                    valueEl.textContent = toHex(finalValue);
+                }
+            }
+            flicker();
+        }
+
+        function createInstruction(data) {
+            const el = document.createElement('div');
+            el.className = 'instruction';
+
+            let bitIndex = 0;
+            for (const group of data.groups) {
+                const groupEl = document.createElement('div');
+                groupEl.className = 'group';
+
+                const bitsEl = document.createElement('div');
+                bitsEl.className = 'bits';
+
+                while (bitIndex < group.end) {
+                    const bitEl = document.createElement('span');
+                    bitEl.className = 'bit';
+                    bitEl.textContent = data.bits[bitIndex];
+                    bitsEl.appendChild(bitEl);
+                    bitIndex++;
+                }
+
+                const labelEl = document.createElement('div');
+                labelEl.className = 'label';
+                labelEl.textContent = group.label;
+
+                groupEl.appendChild(bitsEl);
+                groupEl.appendChild(labelEl);
+                el.appendChild(groupEl);
+            }
+
+            return el;
+        }
+
+        function initRegisters() {
+            registersPanel.innerHTML = '';
+            registerEls = {};
+
+            for (const name of Object.keys(registerState)) {
+                const regEl = document.createElement('div');
+                regEl.className = 'register';
+
+                const nameEl = document.createElement('span');
+                nameEl.className = 'register__name';
+                nameEl.textContent = name;
+
+                const valueEl = document.createElement('span');
+                valueEl.className = 'register__value';
+                valueEl.textContent = toHex(registerState[name]);
+
+                regEl.appendChild(nameEl);
+                regEl.appendChild(valueEl);
+                registersPanel.appendChild(regEl);
+
+                registerEls[name] = { el: regEl, valueEl };
+            }
+        }
+
+        function initMemory() {
+            memoryPanel.innerHTML = '';
+            memoryEls = {};
+
+            for (const addr of Object.keys(memoryState)) {
+                const memEl = document.createElement('div');
+                memEl.className = 'register';
+
+                const addrEl = document.createElement('span');
+                addrEl.className = 'register__name';
+                addrEl.textContent = addr;
+
+                const valueEl = document.createElement('span');
+                valueEl.className = 'register__value';
+                valueEl.textContent = toHex(memoryState[addr]);
+
+                memEl.appendChild(addrEl);
+                memEl.appendChild(valueEl);
+                memoryPanel.appendChild(memEl);
+
+                memoryEls[addr] = { el: memEl, valueEl };
+            }
+        }
+
+        function applyUpdate(updateFn, memUpdateFn) {
+            // Clear previous highlights
+            for (const name of Object.keys(registerEls)) {
+                registerEls[name].el.classList.remove('updated');
+            }
+            for (const addr of Object.keys(memoryEls)) {
+                memoryEls[addr].el.classList.remove('updated');
+            }
+
+            // Get update values (call function if needed)
+            const update = typeof updateFn === 'function' ? updateFn() : (updateFn || {});
+            const memUpdate = typeof memUpdateFn === 'function' ? memUpdateFn() : (memUpdateFn || {});
+
+            // Apply register updates with glitch
+            for (const [name, value] of Object.entries(update)) {
+                registerState[name] = value;
+                if (registerEls[name]) {
+                    registerEls[name].el.classList.add('updated');
+                    glitchValue(registerEls[name].valueEl, value);
+                }
+            }
+
+            // Apply memory updates with glitch
+            for (const [addr, value] of Object.entries(memUpdate)) {
+                memoryState[addr] = value;
+                if (memoryEls[addr]) {
+                    memoryEls[addr].el.classList.add('updated');
+                    glitchValue(memoryEls[addr].valueEl, value);
+                }
+            }
+
+            // Always increment PC by 4 with glitch
+            registerState.PC += 4;
+            registerEls.PC.el.classList.add('updated');
+            glitchValue(registerEls.PC.valueEl, registerState.PC);
+        }
+
+        function resetRegisters() {
+            const initValues = { $t0: 1, $t1: 0, $t2: 0, PC: 0 };
+            for (const name of Object.keys(registerState)) {
+                const val = initValues[name] || 0;
+                registerState[name] = val;
+                if (registerEls[name]) {
+                    registerEls[name].valueEl.textContent = toHex(val);
+                    registerEls[name].el.classList.remove('updated');
+                }
+            }
+        }
+
+        function showInstruction() {
+            if (!isHovering) return;
+
+            const data = instructions[currentIndex];
+            
+            if (instructionEl) {
+                instructionPanel.removeChild(instructionEl);
+            }
+
+            instructionEl = createInstruction(data);
+            instructionPanel.appendChild(instructionEl);
+
+            // Trigger reflow then show
+            instructionEl.offsetHeight;
+            instructionEl.classList.add('visible');
+
+            // Separate groups
+            timeoutId = setTimeout(() => {
+                if (!isHovering) return;
+                instructionEl.classList.add('separated');
+
+                // Show labels
+                timeoutId = setTimeout(() => {
+                    if (!isHovering) return;
+                    instructionEl.classList.add('labeled');
+
+                    // Apply register update after labels settle
+                    timeoutId = setTimeout(() => {
+                        if (!isHovering) return;
+                        applyUpdate(data.update, data.memUpdate);
+
+                        // Hold then fade out
+                        timeoutId = setTimeout(() => {
+                            if (!isHovering) return;
+                            instructionEl.classList.add('fade-out');
+
+                            // Next instruction
+                            timeoutId = setTimeout(() => {
+                                currentIndex = (currentIndex + 1) % instructions.length;
+                                showInstruction();
+                            }, config.fadeTime);
+
+                        }, config.holdTime);
+
+                    }, 250);
+
+                }, config.labelDelay - config.separateDelay);
+
+            }, config.separateDelay);
+        }
+
+        function start() {
+            if (timeoutId) return;
+            showInstruction();
+        }
+
+        function pause() {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+                timeoutId = null;
+            }
+        }
+
+        // Initialize
+        initRegisters();
+        initMemory();
+
+        // Show first instruction statically
+        instructionEl = createInstruction(instructions[0]);
+        instructionEl.classList.add('visible', 'separated', 'labeled');
+        instructionPanel.appendChild(instructionEl);
+        applyUpdate(instructions[0].update, instructions[0].memUpdate);
+
+        window.addEventListener('message', function(e) {
+            if (!e.data) return;
+            if (e.data.type === 'hover') {
+                if (e.data.value) {
+                    isHovering = true;
+                    start();
+                } else {
+                    isHovering = false;
+                    pause();
+                }
+            } else if (e.data.type === 'theme') {
+                const root = document.documentElement;
+                if (e.data.vars) {
+                    for (const [key, value] of Object.entries(e.data.vars)) {
+                        root.style.setProperty(key, value);
+                    }
+                }
+                root.classList.toggle('rainbow', !!e.data.rainbow);
+            }
+        });
+    </script>
+</body>
+</html>

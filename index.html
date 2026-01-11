@@ -85,7 +85,7 @@
                         "--color-white": style.getPropertyValue("--color-white").trim(),
                         "--accent": style.getPropertyValue("--accent").trim(),
                     },
-                    rainbow: document.documentElement.classList.contains("rainbow")
+                    rainbow: document.documentElement.classList.contains("rainbow"),
                 };
                 document.querySelectorAll("iframe").forEach(function(iframe) {
                     if (iframe.contentWindow) {
@@ -103,6 +103,7 @@
     </head>
     <body>
         <div class="grid-bg"></div>
+        <div id="secret-pixel" title=" "></div>
         
         <div id="screensaver-canvas-container" style="display: none;">
             <canvas id="screensaver-canvas-webgl"></canvas>
@@ -121,6 +122,10 @@
                 <div class="modal__body markdown"></div>
             </div>
         </div>
+
+        <div class="subfooter">
+            <span id="subfooter-msg"></span>
+        </div>
         
         <!-- Miscellenous scripts, the stuff down here is for things that shouldn't block the rendering of the page -->
         <script>
@@ -133,7 +138,8 @@
                 "blue",
                 "teal",
                 "rose",
-                "rainbow"
+                "rainbow",
+                "classic"
             ];
 
             function renderItemMarkdown(markdown) {
@@ -152,6 +158,9 @@
                     if (href.endsWith(".html")) {
                         // This is an embed, use an iframe
                         return `<iframe src="${href}" width="100%" height="100%" frameborder="0" allowtransparency="true"></iframe>`;
+                    }
+                    if (href.endsWith(".mov")) {
+                        return `<video src="${href}" width="100%" height="100%" controls loop autoplay disablepictureinpicture disableremoteplayback muted></video>`;
                     }
                     let html = `<img src="${href}"`;
                     if (title) {
@@ -200,6 +209,12 @@
 
                     var tile = document.createElement("div");
                     tile.className = classes.join(" ");
+
+                    const headerEl = document.createElement("div");
+                    headerEl.classList.add("tile__header");
+                    headerEl.classList.add("show-classic");
+                    headerEl.textContent = item.title.toUpperCase();
+                    tile.appendChild(headerEl);
 
                     if (item.chip) {
                         var chipEl = document.createElement("iframe");
@@ -258,7 +273,7 @@
 
                     if (item.title) {
                         var titleEl = document.createElement("h2");
-                        titleEl.innerHTML = item.title.toUpperCase().replace("\n", "<br>");
+                        titleEl.innerHTML = item.title.toUpperCase();
                         contentEl.appendChild(titleEl);
                         anyContent = true;
                     }
@@ -512,5 +527,225 @@
                 });
             }
         </script>
+        <script>
+            (function() {
+                const pixel = document.getElementById('secret-pixel');
+                pixel.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const popup = document.createElement('div');
+                    popup.className = 'secret-popup';
+                    popup.innerHTML = `
+                        <div class="secret-popup__content">
+                            <h3>You found me!</h3>
+                            <p>Good eye! You've found the secret pixel.</p>
+                            <p>Here, have a cookie 🍪, it goes stale in 3 days</p>
+                            <button class="secret-popup__close">Close</button>
+                        </div>
+                    `;
+                    document.body.appendChild(popup);
+                    
+                    popup.querySelector('.secret-popup__close').addEventListener('click', function() {
+                        popup.remove();
+                    });
+                
+                    // Give an actual cookie
+                    // No it doesn't do anything
+                    document.cookie = "has-a-cookie=true; max-age=259200; path=/";
+                    
+                    popup.addEventListener('click', function(e) {
+                        if (e.target === popup) {
+                            popup.remove();
+                        }
+                    });
+                });
+            })();
+        </script>
+        <script>
+            /* Only works on iOS and other browsers that allow scrolling past the bottom of the page */
+            const msgs = [
+                "Cold",
+                "Warmer",
+                "Hot!",
+                "HOT HOT HOT!",
+            ]
+            let leaving = false;
+            window.addEventListener('scroll', () => {
+                let maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                let subfooter = document.getElementById('subfooter-msg');
+                let i = Math.floor((window.scrollY - maxScroll - 50) / 50);
+                if (i < 0) {
+                    subfooter.innerText = "";
+                }
+                else if (i >= msgs.length) {
+                    if (leaving) {
+                        return;
+                    }
+                    leaving = true; // Prevents the page from redirecting multiple times
+                    
+                    // You can probably guess what this does
+                    window.location.href = atob("aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==");
+                }
+                else {
+                    subfooter.innerText = msgs[i];
+                }
+            });
+        </script>
+        <script type="text/javascript">
+            // <![CDATA[
+            var sparks=75; // how many sparks per clicksplosion
+            var speed=33; // how fast - smaller is faster
+            var bangs=5; // how many can be launched simultaneously (note that using too many can slow the script down)
+            var colours=new Array('#03f', '#f03', '#0e0', '#93f', '#0cf', '#f93', '#f0c'); 
+            //                     blue    red     green   purple  cyan    orange  pink
+            
+            /****************************
+            *   Clicksplosion Effect    *
+            *(c)2012-3 mf2fm web-design *
+            *  http://www.mf2fm.com/rv  *
+            * DON'T EDIT BELOW THIS BOX *
+            ****************************/
+            var intensity=new Array();
+            var Xpos=new Array();
+            var Ypos=new Array();
+            var dX=new Array();
+            var dY=new Array();
+            var stars=new Array();
+            var decay=new Array();
+            var timers=new Array();
+            var swide=800;
+            var shigh=600;
+            var sleft=sdown=0;
+            var count=0;
+            
+            function addLoadEvent(funky) {
+              var oldonload=window.onload;
+              if (typeof(oldonload)!='function') window.onload=funky;
+              else window.onload=function() {
+                if (oldonload) oldonload();
+                funky();
+              }
+            }
+            
+            addLoadEvent(clicksplode);
+            
+            function clicksplode() { if (document.getElementById) {
+              var i, j;
+              window.onscroll=set_scroll;
+              window.onresize=set_width;
+              document.onclick=eksplode;
+              set_width();
+              set_scroll();
+              for (i=0; i<bangs; i++) for (j=sparks*i; j<sparks+sparks*i; j++) {
+                stars[j]=createDiv('*', 13);
+                document.body.appendChild(stars[j]);
+              }
+            }}
+            
+            function createDiv(char, size) {
+              var div, sty;
+              div=document.createElement('div');
+              sty=div.style;
+              sty.font=size+'px monospace';
+              sty.position='absolute';
+              sty.backgroundColor='transparent';
+              sty.visibility='hidden';
+              sty.zIndex='10000000';
+              div.appendChild(document.createTextNode(char));
+              return (div);
+            }
+            
+            function bang(N) {
+              var i, Z, A=0;
+              for (i=sparks*N; i<sparks*(N+1); i++) { 
+                if (decay[i]) {
+                  Z=stars[i].style;
+                  Xpos[i]+=dX[i];
+                  Ypos[i]+=(dY[i]+=1.25/intensity[N]);
+                  if (Xpos[i]>=swide || Xpos[i]<0 || Ypos[i]>=shigh+sdown || Ypos[i]<0) decay[i]=1;
+                  else {
+                    Z.left=Xpos[i]+'px';
+                    Z.top=Ypos[i]+'px';
+                  }
+                  if (decay[i]==15) Z.fontSize='7px';
+                  else if (decay[i]==7) Z.fontSize='2px';
+                  else if (decay[i]==1) Z.visibility='hidden';
+                  decay[i]--;
+                }
+                else A++;
+              }
+              if (A!=sparks) timers[N]=setTimeout('bang('+N+')', speed);
+            }
+            
+            function eksplode(e) { 
+              if (!document.documentElement.className.includes("rainbow") ) {
+                return;
+              }
+              var x, y, i, M, Z, N;
+              set_scroll();
+              y=(e)?e.pageY:event.y+sdown;
+              x=(e)?e.pageX:event.x+sleft;
+              N=++count%bangs;
+              M=Math.floor(Math.random()*3*colours.length);
+              intensity[N]=5+Math.random()*4;
+              for (i=N*sparks; i<(N+1)*sparks; i++) {
+                Xpos[i]=x;
+                Ypos[i]=y-5;
+                dY[i]=(Math.random()-0.5)*intensity[N];
+                dX[i]=(Math.random()-0.5)*(intensity[N]-Math.abs(dY[i]))*1.25;
+                decay[i]=16+Math.floor(Math.random()*16);
+                Z=stars[i].style;
+                if (M<colours.length) Z.color=colours[i%2?count%colours.length:M];
+                else if (M<2*colours.length) Z.color=colours[count%colours.length];
+                else Z.color=colours[i%colours.length];
+                Z.fontSize='13px';
+                Z.visibility='visible';
+              }
+              clearTimeout(timers[N]);
+              bang(N);
+            } 
+            
+            function set_width() {
+              var sw_min=999999;
+              var sh_min=999999;
+              if (document.documentElement && document.documentElement.clientWidth) {
+                if (document.documentElement.clientWidth>0) sw_min=document.documentElement.clientWidth;
+                if (document.documentElement.clientHeight>0) sh_min=document.documentElement.clientHeight;
+              }
+              if (typeof(self.innerWidth)=='number' && self.innerWidth) {
+                if (self.innerWidth>0 && self.innerWidth<sw_min) sw_min=self.innerWidth;
+                if (self.innerHeight>0 && self.innerHeight<sh_min) sh_min=self.innerHeight;
+              }
+              if (document.body.clientWidth) {
+                if (document.body.clientWidth>0 && document.body.clientWidth<sw_min) sw_min=document.body.clientWidth;
+                if (document.body.clientHeight>0 && document.body.clientHeight<sh_min) sh_min=document.body.clientHeight;
+              }
+              if (sw_min==999999 || sh_min==999999) {
+                sw_min=800;
+                sh_min=600;
+              }
+              swide=sw_min-7;
+              shigh=sh_min-7;
+            }
+            
+            function set_scroll() {
+              if (typeof(self.pageYOffset)=='number') {
+                sdown=self.pageYOffset;
+                sleft=self.pageXOffset;
+              }
+              else if (document.body && (document.body.scrollTop || document.body.scrollLeft)) {
+                sdown=document.body.scrollTop;
+                sleft=document.body.scrollLeft;
+              }
+              else if (document.documentElement && (document.documentElement.scrollTop || document.documentElement.scrollLeft)) {
+                sleft=document.documentElement.scrollLeft;
+                sdown=document.documentElement.scrollTop;
+              }
+              else {
+                sdown=0;
+                sleft=0;
+              }
+            }
+            // ]]>
+            </script>
     </body>
 </html>

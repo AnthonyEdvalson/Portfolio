@@ -65,7 +65,9 @@ The prompt has a couple parts:
 This is the one part of the prompt that I didn’t write. It’s stored in a file that Atlas can edit and update as needed. The persona is pretty unconventional, but we’ll take a closer look at it later on.
 
 **2. Holidays**
-There’s also an optional “holiday” prompt that is added on certain days encouraging Atlas to use certain emojis or nudge behavior. Like using eagles and flags on the 4th of July 🦅🦅🦅
+There’s also an optional “holiday” prompt that is added on certain days encouraging Atlas to use certain emojis or nudge behavior. Here's a notification I got after a particularly sleep-deprived Christmas:
+
+![](assets/atlas-holidays.png)
 
 **3. Task**
 After that is whatever task was passed into atlas.ask()

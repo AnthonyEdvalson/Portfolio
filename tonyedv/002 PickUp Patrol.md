@@ -1,6 +1,7 @@
 ---
-color: orange
+color: white
 width: 4
+height: 1
 code: PRJ.014
 title: PickUp Patrol
 category: Startup
