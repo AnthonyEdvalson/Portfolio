@@ -698,7 +698,6 @@
                 let maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 let subfooter = document.getElementById('subfooter-msg');
                 let i = Math.floor((window.scrollY - maxScroll - 50) / 50);
-                console.log(window.scrollY, maxScroll, i);
                 if (i < 0) {
                     subfooter.style.opacity = 0;
                     subfooter.innerText = ".";
