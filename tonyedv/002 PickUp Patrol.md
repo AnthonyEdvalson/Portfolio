@@ -1,11 +1,12 @@
 ---
 color: white
 width: 4
-height: 1
+height: 2
 code: PRJ.014
 title: PickUp Patrol
 category: Startup
 subtitle: SaaS startup
+chip: pup
 ---
 
 [PickUp Patrol](https://www.pickuppatrol.net/) (we call it PUP for short) is a SaaS company that I founded in high school. It’s since grown into a small business that is used by hundreds of schools internationally to manage the attendance and dismissal process.

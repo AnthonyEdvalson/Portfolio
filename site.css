@@ -520,10 +520,11 @@ ul {
 .modal__body pre {
     margin: 1.5em 0;
     padding: 1em 1.25em;
-    overflow-x: auto;
     font-size: 13px;
     line-height: 1.5;
     position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .modal__body pre::after {
@@ -616,11 +617,11 @@ ul {
     display: flex;
     flex-direction: row;
     gap: 10px;
-    width: 200px;
+    width: 230px;
 }
 
 .themes:hover {
-    max-width: 170px;
+    max-width: 200px;
 }
 
 .themes .theme {
@@ -657,13 +658,23 @@ ul {
         inset 2px 2px 0 #dfdfdf;
 }
 
-html.orange .theme--orange,
-html.blue .theme--blue,
-html.teal .theme--teal,
-html.rose .theme--rose,
-html.rainbow .theme--rainbow,
-html.classic .theme--classic {
-    order: -1;
+.theme--current {
+    outline: 1px solid white;
+    outline-offset: -1px;
+}
+
+html.orange .theme--current { background-color: var(--color-orange); }
+html.blue .theme--current { background-color: var(--color-blue); }
+html.teal .theme--current { background-color: var(--color-teal); }
+html.rose .theme--current { background-color: var(--color-rose); }
+html.rainbow .theme--current { background: linear-gradient(45deg in oklab, #EF476F 20%, #FFD166 40%, #06D6A0 60%, #118AB2 80%); }
+html.classic .theme--current { 
+    background: #c0c0c0;
+    box-shadow: 
+        inset -1px -1px 0 #404040,
+        inset 1px 1px 0 #ffffff,
+        inset -2px -2px 0 #808080,
+        inset 2px 2px 0 #dfdfdf;
 }
 
 /* RAINBOW */
@@ -891,4 +902,65 @@ html.rainbow .tile {
 .secret-popup__close:hover {
     background: var(--accent);
     color: var(--color-black);
+}
+
+.image-zoom {
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+    background: rgba(0, 0, 0, 0.9);
+    overflow: auto;
+    cursor: zoom-out;
+    display: none;
+}
+
+.image-zoom--active {
+    display: block;
+}
+
+.image-zoom__inner {
+    min-width: 100%;
+    min-height: 100%;
+    display: flex;
+    padding: 20px;
+}
+
+.image-zoom__img {
+    max-width: none;
+    max-height: none;
+    margin: auto;
+    cursor: zoom-out;
+}
+
+.image-zoom__close {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    background: var(--color-black);
+    border: 1px solid var(--color-white);
+    color: var(--color-white);
+    font-size: 28px;
+    font-weight: 300;
+    cursor: var(--cursor-pointer);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10002;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+}
+
+.image-zoom__close:hover {
+    opacity: 1;
+}
+
+.modal__body img {
+    cursor: zoom-in;
+}
+
+.modal__body img:hover {
+    outline: 1px solid var(--accent);
+    outline-offset: 2px;
 }

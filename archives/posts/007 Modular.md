@@ -14,21 +14,21 @@ disable: true
 
 I often got bored in math classes during college. I had taken some of the more advanced classes in high school, and so often we'd cover material that was review for me. So I would do a lot of doodling and sketching to kill the time. At one point I was messing around with drawing functions as graphs. Here is what one of those sketches would look like for `f(n) = 2n`
 
-![](assets/mod-chain.png)
+![](archives/posts/mod-chain.png)
 
 Each number is a node, and there's a directed edge going from `n` to `f(n)` for all natural numbers. In a sense, this graph is what doubling whole numbers looks like. Doubling 1 takes you to 2, doubling 2 gives 4, etc. There's an infinite number of chains of infinite length, so I'm just showing a couple nodes for simplicity.
 
 Because the chains are infinitely long, it's kind of boring and not very satisfying to draw. So, I thought it would be more fun to use modular arithmetic to keep things finite. Here is the graph of `2n mod 10`, which is my personal favorite.
 
-![](assets/mod-cycles.png)
+![](archives/posts/mod-cycles.png)
 
 This looked kind of neat, so I started drawing more, I tried different mods to see how it impacts the shape, here's `2n mod 1` through `2n mod 10`
 
-![](assets/mod-mods1.png)
+![](archives/posts/mod-mods1.png)
 
 After the graphs started getting too big to easily draw (mod 30 was around the most I could manage before it got too tedious) I looked at slight variations, like `2n + 1` or `3n`. One of the variations I tried was `n^2`, which looked like this:
 
-![](assets/mod-mods2.png)
+![](archives/posts/mod-mods2.png)
 
 When drawing `n^2 mod 11`, it became obvious that there was something interesting going on. The graph for `n^2 mod 11` was remarkably similar to `2n mod 10`. I also noted the same between `n^2 mod 7` and `2n mod 6` , as well as `n^2 mod 5` and `2n mod 4`. I came up with the conjecture:
 

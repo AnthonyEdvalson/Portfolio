@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PickUp Patrol</title>
+    <style>
+        :root {
+            --color-blackest: #171717;
+            --color-black: #282828;
+            --color-white: #CCCCCC;
+            --accent: #D05030;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .road {
+            position: absolute;
+            top: 35%;
+            left: 0;
+            right: 0;
+            transform: translateY(-50%);
+            height: 60vmin;
+        }
+
+        .road-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--color-black);
+        }
+
+        .road-line.top { top: 0; }
+        .road-line.bottom { bottom: 0; }
+
+        .bus {
+            position: absolute;
+            width: 60vmin;
+            height: 30vmin;
+            background: var(--color-white);
+            border: 1px solid var(--color-black);
+        }
+
+        .student {
+            position: absolute;
+            width: 7vmin;
+            height: 7vmin;
+            background: var(--color-black);
+            border-radius: 50%;
+        }
+
+        .fade-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 15vmin;
+            background: linear-gradient(to top, var(--color-white) 0%, var(--color-white) 20%, transparent 100%);
+            pointer-events: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="road">
+            <div class="road-line top"></div>
+            <div class="road-line bottom"></div>
+        </div>
+        <div class="bus" id="bus"></div>
+        <div class="fade-overlay"></div>
+    </div>
+
+    <script>
+        const bus = document.getElementById('bus');
+        const container = document.getElementById('container');
+        
+        const STUDENT_COUNT = 8;
+        const students = [];
+        for (let i = 0; i < STUDENT_COUNT; i++) {
+            const el = document.createElement('div');
+            el.className = 'student';
+            container.appendChild(el);
+            students.push({ el });
+        }
+
+        const BUS_W_VMIN = 60;
+        const BUS_H_VMIN = 30;
+        const STUDENT_SIZE_VMIN = 7;
+        const QUEUE_SPACING_VMIN = 8;
+        const ROAD_Y_VMIN = -15;
+        const ROAD_HALF_H_VMIN = 30;
+        const BUS_Y_VMIN = ROAD_Y_VMIN - BUS_H_VMIN / 2;
+        const QUEUE_BASE_Y_VMIN = ROAD_Y_VMIN + ROAD_HALF_H_VMIN + 10;
+
+        const SEAT_ORDER = [0, 3, 4, 7, 1, 2, 5, 6];
+
+        function lerp(a, b, t) {
+            return a + (b - a) * t;
+        }
+
+        function clamp(v, min, max) {
+            return Math.max(min, Math.min(max, v));
+        }
+
+        const ease = {
+            linear: t => t,
+            out: t => 1 - (1 - t) ** 2,
+            in: t => t * t,
+            inOut: t => t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2
+        };
+
+        function sample(keyframes, t) {
+            if (keyframes.length === 0) return { x: 0, y: 0 };
+            if (t <= keyframes[0].t) return { x: keyframes[0].x, y: keyframes[0].y };
+            if (t >= keyframes[keyframes.length - 1].t) {
+                const last = keyframes[keyframes.length - 1];
+                return { x: last.x, y: last.y };
+            }
+
+            for (let i = 0; i < keyframes.length - 1; i++) {
+                const a = keyframes[i];
+                const b = keyframes[i + 1];
+                if (t >= a.t && t <= b.t) {
+                    let local = (t - a.t) / (b.t - a.t);
+                    if (b.ease) local = ease[b.ease](local);
+                    return {
+                        x: lerp(a.x, b.x, local),
+                        y: lerp(a.y, b.y, local)
+                    };
+                }
+            }
+            return { x: 0, y: 0 };
+        }
+
+        function seatOffset(index) {
+            const col = index % 4;
+            const row = Math.floor(index / 4);
+            const padding = 3;
+            const cellW = (BUS_W_VMIN - padding * 2) / 4;
+            const cellH = (BUS_H_VMIN - padding * 2) / 2;
+            return {
+                x: padding + (col + 0.5) * cellW - STUDENT_SIZE_VMIN / 2,
+                y: padding + (row + 0.5) * cellH - STUDENT_SIZE_VMIN / 2
+            };
+        }
+
+        function queuePos(queueIndex) {
+            return {
+                x: 0,
+                y: QUEUE_BASE_Y_VMIN + queueIndex * QUEUE_SPACING_VMIN
+            };
+        }
+
+        const T = {
+            queueEnd: 0.15,
+            busArrive: 0.30,
+            loadStart: 0.32,
+            loadPerStudent: 0.06,
+            departDelay: 0.04,
+            departEnd: 1.0
+        };
+
+        function buildBusKeyframes() {
+            const offLeft = -230;
+            const stopX = -BUS_W_VMIN / 2;
+            const offRight = 200;
+            const loadEnd = T.loadStart + STUDENT_COUNT * T.loadPerStudent;
+            const departStart = loadEnd + T.departDelay;
+
+            return [
+                { t: 0, x: offLeft, y: BUS_Y_VMIN },
+                { t: T.queueEnd, x: offLeft, y: BUS_Y_VMIN },
+                { t: T.busArrive, x: stopX, y: BUS_Y_VMIN, ease: 'out' },
+                { t: departStart, x: stopX, y: BUS_Y_VMIN },
+                { t: T.departEnd, x: offRight, y: BUS_Y_VMIN, ease: 'in' }
+            ];
+        }
+
+        function buildStudentKeyframes(index) {
+            const enterDelay = index * 0.012;
+            const enterEnd = 0.05 + enterDelay;
+            const offscreenY = QUEUE_BASE_Y_VMIN + 60;
+            const seat = seatOffset(SEAT_ORDER[index]);
+            const seatX = seat.x - BUS_W_VMIN / 2;
+            const seatY = seat.y + BUS_Y_VMIN;
+
+            const boardStart = T.loadStart + index * T.loadPerStudent;
+            const duration = T.loadPerStudent;
+            const loadEnd = T.loadStart + STUDENT_COUNT * T.loadPerStudent;
+            const departStart = loadEnd + T.departDelay;
+
+            const kf = [];
+
+            kf.push({ t: 0, x: 0, y: offscreenY });
+            kf.push({ t: enterDelay, x: 0, y: offscreenY });
+            kf.push({ t: enterEnd, x: 0, y: queuePos(index).y, ease: 'out' });
+
+            for (let j = 0; j < index; j++) {
+                const prevSlot = index - j;
+                const nextSlot = index - j - 1;
+                const shiftStart = T.loadStart + j * T.loadPerStudent;
+                const shiftEnd = shiftStart + 0.015;
+                kf.push({ t: shiftStart, x: 0, y: queuePos(prevSlot).y });
+                kf.push({ t: shiftEnd, x: 0, y: queuePos(nextSlot).y });
+            }
+
+            const tYEnd = boardStart + duration * 0.45;
+            const tXEnd = boardStart + duration * 0.9;
+
+            kf.push({ t: boardStart, x: 0, y: queuePos(0).y });
+            kf.push({ t: tYEnd, x: 0, y: seatY, ease: 'inOut' });
+            kf.push({ t: tXEnd, x: seatX, y: seatY, ease: 'out', seated: true });
+
+            kf.push({ t: departStart, x: seatX, y: seatY, seated: true });
+            kf.push({ t: T.departEnd, x: seatX + 240, y: seatY, seated: true });
+
+            kf.sort((a, b) => a.t - b.t);
+            return kf;
+        }
+
+        function vminToPx(v) {
+            return v * Math.min(window.innerWidth, window.innerHeight) / 100;
+        }
+
+        function toPixels(x, y) {
+            const cx = container.offsetWidth / 2;
+            const cy = container.offsetHeight / 2;
+            return {
+                left: cx + vminToPx(x),
+                top: cy + vminToPx(y)
+            };
+        }
+
+        function renderBus(pos) {
+            const px = toPixels(pos.x, pos.y);
+            bus.style.left = px.left + 'px';
+            bus.style.top = px.top + 'px';
+        }
+
+        function renderStudent(el, pos) {
+            const px = toPixels(pos.x, pos.y);
+            el.style.left = px.left + 'px';
+            el.style.top = px.top + 'px';
+        }
+
+        const ANIM_DURATION_MS = 8000;
+
+        let busKeyframes = buildBusKeyframes();
+        let studentKeyframes = students.map((_, i) => buildStudentKeyframes(i));
+
+        const loadEnd = T.loadStart + STUDENT_COUNT * T.loadPerStudent;
+        const CHECKPOINTS = [T.queueEnd, T.busArrive, loadEnd, 1.0];
+
+        let currentT = CHECKPOINTS[0];
+        let isHovering = false;
+        let animId = null;
+        let lastTimestamp = 0;
+
+        function getNextCheckpoint(t) {
+            for (const cp of CHECKPOINTS) {
+                if (cp > t + 0.001) return cp;
+            }
+            return 1.0;
+        }
+
+        function getCurrentCheckpointIndex(t) {
+            for (let i = 0; i < CHECKPOINTS.length; i++) {
+                if (t <= CHECKPOINTS[i] + 0.001) return i;
+            }
+            return CHECKPOINTS.length - 1;
+        }
+
+        function renderFrame(t) {
+            const busPos = sample(busKeyframes, t);
+            renderBus(busPos);
+            
+            students.forEach((s, i) => {
+                const kf = studentKeyframes[i];
+                const pos = sample(kf, t);
+
+                const kfAtT = kf.find((k, idx) => {
+                    const next = kf[idx + 1];
+                    return next && t >= k.t && t < next.t && k.seated;
+                }) || (t >= kf[kf.length - 1].t && kf[kf.length - 1].seated ? kf[kf.length - 1] : null);
+
+                if (kfAtT) {
+                    const seat = seatOffset(SEAT_ORDER[i]);
+                    renderStudent(s.el, { x: busPos.x + seat.x, y: busPos.y + seat.y });
+                } else {
+                    renderStudent(s.el, pos);
+                }
+            });
+        }
+
+        function animate(timestamp) {
+            const dt = lastTimestamp ? (timestamp - lastTimestamp) : 16;
+            lastTimestamp = timestamp;
+
+            const nextCheckpoint = getNextCheckpoint(currentT);
+            const atCheckpoint = Math.abs(currentT - nextCheckpoint) < 0.001 || 
+                                 CHECKPOINTS.some(cp => Math.abs(currentT - cp) < 0.001);
+
+            const shouldAnimate = isHovering || (!atCheckpoint && currentT < nextCheckpoint);
+
+            if (shouldAnimate && currentT < 1.0) {
+                const speed = 1 / ANIM_DURATION_MS;
+                currentT = Math.min(currentT + speed * dt, 1.0);
+                renderFrame(currentT);
+
+                if (!isHovering) {
+                    const cp = getNextCheckpoint(currentT - speed * dt);
+                    if (currentT >= cp) {
+                        currentT = cp;
+                        renderFrame(currentT);
+                    }
+                }
+            }
+
+            if (currentT >= 1.0) {
+                currentT = 0;
+                renderFrame(currentT);
+            }
+
+            animId = requestAnimationFrame(animate);
+        }
+
+        renderFrame(CHECKPOINTS[0]);
+        animId = requestAnimationFrame(animate);
+
+        window.addEventListener('resize', () => {
+            renderFrame(currentT);
+        });
+
+        window.addEventListener('message', function(e) {
+            if (!e.data) return;
+            if (e.data.type === 'hover') {
+                isHovering = e.data.value;
+            } else if (e.data.type === 'theme') {
+                const root = document.documentElement;
+                if (e.data.vars) {
+                    for (const [key, value] of Object.entries(e.data.vars)) {
+                        root.style.setProperty(key, value);
+                    }
+                }
+                root.classList.toggle('rainbow', !!e.data.rainbow);
+            }
+        });
+    </script>
+</body>
+</html>

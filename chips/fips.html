@@ -181,15 +181,13 @@
     </div>
 
     <script>
-        // Register state - persists across instructions
         const registerState = {
-            $t0: 1,  // Current Fibonacci number
-            $t1: 0,  // Previous Fibonacci number
-            $t2: 0,  // Memory address counter (0, 4, 8, 12, 0, ...)
+            $t0: 1,
+            $t1: 0,
+            $t2: 0,
             PC: 0,
         };
 
-        // Memory state - 4 locations for rolling writes
         const memoryState = {
             '0x00': 0,
             '0x04': 0,
@@ -197,14 +195,11 @@
             '0x0C': 0,
         };
 
-        // Helper to get memory key from $t2 address value
         function memKey() {
             const addr = registerState.$t2;
             return '0x' + addr.toString(16).toUpperCase().padStart(2, '0');
         }
 
-        // Fibonacci sequence with rolling memory writes
-        // Uses memory as temp storage for the swap trick
         const instructions = [
             {
                 // sw $t0, 0($t2) - store current fib to memory at $t2
@@ -232,7 +227,7 @@
                 update: () => ({ $t0: registerState.$t0 + registerState.$t1 }),
             },
             {
-                // lw $t1, 0($t2) - load old fib value back (swap trick)
+                // lw $t1, 0($t2) - load old fib value back
                 bits: "10001101010010010000000000000000",
                 groups: [
                     { end: 6, label: "lw" },
@@ -254,7 +249,7 @@
                 update: () => ({ $t2: registerState.$t2 + 4 }),
             },
             {
-                // andi $t2, $t2, 15 - wrap address (mod 16)
+                // andi $t2, $t2, 15 - wrap address
                 bits: "00110001010010100000000000001111",
                 groups: [
                     { end: 6, label: "andi" },
@@ -271,7 +266,7 @@
                     { end: 6, label: "j" },
                     { end: 32, label: "0x0" },
                 ],
-                update: () => ({ PC: -4 }),  // Will become 0 after PC += 4
+                update: () => ({ PC: -4 }),
             },
         ];
 
@@ -404,7 +399,6 @@
         }
 
         function applyUpdate(updateFn, memUpdateFn) {
-            // Clear previous highlights
             for (const name of Object.keys(registerEls)) {
                 registerEls[name].el.classList.remove('updated');
             }
@@ -412,11 +406,9 @@
                 memoryEls[addr].el.classList.remove('updated');
             }
 
-            // Get update values (call function if needed)
             const update = typeof updateFn === 'function' ? updateFn() : (updateFn || {});
             const memUpdate = typeof memUpdateFn === 'function' ? memUpdateFn() : (memUpdateFn || {});
 
-            // Apply register updates with glitch
             for (const [name, value] of Object.entries(update)) {
                 registerState[name] = value;
                 if (registerEls[name]) {
@@ -425,7 +417,6 @@
                 }
             }
 
-            // Apply memory updates with glitch
             for (const [addr, value] of Object.entries(memUpdate)) {
                 memoryState[addr] = value;
                 if (memoryEls[addr]) {
@@ -434,7 +425,6 @@
                 }
             }
 
-            // Always increment PC by 4 with glitch
             registerState.PC += 4;
             registerEls.PC.el.classList.add('updated');
             glitchValue(registerEls.PC.valueEl, registerState.PC);
@@ -464,31 +454,25 @@
             instructionEl = createInstruction(data);
             instructionPanel.appendChild(instructionEl);
 
-            // Trigger reflow then show
             instructionEl.offsetHeight;
             instructionEl.classList.add('visible');
 
-            // Separate groups
             timeoutId = setTimeout(() => {
                 if (!isHovering) return;
                 instructionEl.classList.add('separated');
 
-                // Show labels
                 timeoutId = setTimeout(() => {
                     if (!isHovering) return;
                     instructionEl.classList.add('labeled');
 
-                    // Apply register update after labels settle
                     timeoutId = setTimeout(() => {
                         if (!isHovering) return;
                         applyUpdate(data.update, data.memUpdate);
 
-                        // Hold then fade out
                         timeoutId = setTimeout(() => {
                             if (!isHovering) return;
                             instructionEl.classList.add('fade-out');
 
-                            // Next instruction
                             timeoutId = setTimeout(() => {
                                 currentIndex = (currentIndex + 1) % instructions.length;
                                 showInstruction();
@@ -515,11 +499,9 @@
             }
         }
 
-        // Initialize
         initRegisters();
         initMemory();
 
-        // Show first instruction statically
         instructionEl = createInstruction(instructions[0]);
         instructionEl.classList.add('visible', 'separated', 'labeled');
         instructionPanel.appendChild(instructionEl);

@@ -126,6 +126,13 @@
         <div class="subfooter">
             <span id="subfooter-msg"></span>
         </div>
+
+        <div id="image-zoom" class="image-zoom">
+            <button class="image-zoom__close" aria-label="Close">&times;</button>
+            <div class="image-zoom__inner">
+                <img class="image-zoom__img" src="" alt="">
+            </div>
+        </div>
         
         <!-- Miscellenous scripts, the stuff down here is for things that shouldn't block the rendering of the page -->
         <script>
@@ -290,6 +297,11 @@
                         themesEl.className = "themes";
                         const themesElInner = document.createElement("div");
                         themesElInner.className = "themes__inner";
+                        
+                        var currentEl = document.createElement("div");
+                        currentEl.className = "theme theme--current";
+                        themesElInner.appendChild(currentEl);
+                        
                         THEMES.forEach(theme => {
                             var themeEl = document.createElement("div");
                             themeEl.classList.add("theme");
@@ -441,8 +453,57 @@
             });
 
             document.addEventListener("keydown", function(e) {
-                if (e.key === "Escape" && !modal.hidden) {
+                if (e.key === "Escape" && !modal.hidden && !document.getElementById("image-zoom").classList.contains("image-zoom--active")) {
                     closeModal();
+                }
+            });
+
+            var imageZoom = document.getElementById("image-zoom");
+            var imageZoomImg = imageZoom.querySelector(".image-zoom__img");
+            var imageZoomClose = imageZoom.querySelector(".image-zoom__close");
+
+            function openImageZoom(src, alt) {
+                imageZoomImg.src = src;
+                imageZoomImg.alt = alt || "";
+                imageZoom.classList.add("image-zoom--active");
+                imageZoomImg.onload = function() {
+                    var inner = imageZoom.querySelector(".image-zoom__inner");
+                    if (imageZoomImg.naturalWidth > window.innerWidth || imageZoomImg.naturalHeight > window.innerHeight) {
+                        var scrollX = Math.max(0, (inner.scrollWidth - window.innerWidth) / 2);
+                        var scrollY = Math.max(0, (inner.scrollHeight - window.innerHeight) / 2);
+                        imageZoom.scrollLeft = scrollX;
+                        imageZoom.scrollTop = scrollY;
+                    }
+                };
+            }
+
+            function closeImageZoom() {
+                imageZoom.classList.remove("image-zoom--active");
+                imageZoomImg.src = "";
+            }
+
+            imageZoomClose.addEventListener("click", function(e) {
+                e.stopPropagation();
+                closeImageZoom();
+            });
+
+            imageZoom.addEventListener("click", function(e) {
+                if (e.target === imageZoom || e.target === imageZoomImg || e.target.classList.contains("image-zoom__inner")) {
+                    closeImageZoom();
+                }
+            });
+
+            document.addEventListener("keydown", function(e) {
+                if (e.key === "Escape" && imageZoom.classList.contains("image-zoom--active")) {
+                    closeImageZoom();
+                }
+            });
+
+            modalBody.addEventListener("click", function(e) {
+                if (e.target.tagName === "IMG") {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openImageZoom(e.target.src, e.target.alt);
                 }
             });
         </script>

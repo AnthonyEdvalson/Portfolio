@@ -7,30 +7,7 @@ category: Project
 subtitle: Expansive Fantasy Setting
 chip: dnd
 height: 5
-disable: true
 ---
-> INCOMPLETE
-
-1. Intro
-	1. inspo, experiment and plan
-	2. stats
-	3. disclaimer
-2. Idea generation
-	1. Themes
-	2. list of lists
-3. Map
-	1. pictures, overview
-	2. Substance pipeline
-	3. interactive map
-4. Info management
-	1. Obsidian vault, linking, refactoring, consistency
-	2. Detail for idea generation
-5. text based RPG
-	1. LLM scaffolding, dynamic content that responds to weather/time.
-6. Conclusion
-	1. Accessibility
-	2. Note on about unsharability
-
 
 The Lands Apart is an open world TTRPG fantasy setting I've been iterating on over the last couple of years. It was born out of COVID, I had been running campaigns with friends at the time and wanted to try my hand at a truly open world setting where players could go anywhere at any time, and I'd always have content prepared in advance, and answers to any question that comes up.
 
@@ -71,9 +48,9 @@ I also wanted to use it to communicate the scale. I plan to only show small subs
 
 And finally, I want the map to hook in players. Making an area that looks exciting or unusual is a great way to get players interested in exploring. I try to have major world events legible on the map because they raise good questions. Like what are the four triangle symbols? Why is the compass rose in the middle of an island? Why is there a weird purple forest?
 
-Here's the full map rendered at 1/2 resolution. You might want to right click and open in new tab so you can zoom in and see all the detail.
+Here's the full map rendered at 1/4 resolution:
 
-![](assets/landsapart-bigmap.jpeg)
+![](assets/la-bigmap.jpeg)
 
 (btw when rendering at a lower res some of the positions get shifted weirdly, if you zoom in you'll def see some alignment issues)
 
@@ -90,13 +67,13 @@ There’s a few key benefits to doing it this way:
 
 I pushed Substance to it's limits with this map. The final render produces an image of size 16384x16384, roughly the size of 32 4K images. It takes ~80GB of RAM to render, but the size is kind of necessary to be able to read the place names.
 
-I hand painted the coastlines, rivers, and biomes, but all the shading, coloring, and text was added by a very complicated substance pipeline.
+I hand painted the masks for coastlines, rivers, and biomes, but all the shading, coloring, and text was added by a very complicated substance pipeline. Here's the main part that draws the terrain:
 
-(Show substance graph)
+![](assets/la-map-graph.png)
 
 I also made an interactive version of the map. This is a webpage that shows the map, plus a bunch of information about weather forecasts, time zones, and pins at various points of interest. I had to write my own time zone libraries, as well as some custom weather simulations that take the climates of reach region into account. But here's how the map looks in the UI:
 
-![](assets/landsapart-interactive.png)
+![](assets/la-interactive.png)
 
 # Note Management
 
@@ -105,7 +82,7 @@ With over 1,100 files, managing the notes for this project has not been easy. Bu
 Since it required to share whenever talking about Obsidian, here's my file graph for the Lands Apart:
 
 
-![](assets/Pasted%20image%2020260110185147.png)
+![](assets/la-note-graph.png)
 
 To manage all this is quite difficult, making a change is less about adding a new note, and more becoming an expert at finding all the stuff that needs to be changed because of it. Like if I want to change a character's motivation, I need to make sure that character's note is updated, but also anywhere that trait is mentioned. This could include notes about locations, quests, or other characters.
 
@@ -140,7 +117,7 @@ If your notes are well maintained, you'll naturally find yourself filling in gap
 > - **National Tree:** Silver Oak
 > - **National Colors:** White, blue, silver
 
-To answer your question: yes, I did actually pick national flowers for all the countries. This was part of the overall philosophy of the project, the goal is to treat this place as if it were real. I didn't want to ignore those little cultural things just because they weren't gameplay relevant. I think having these details are what make the world feel real.
+To answer your question: yes, I did actually pick national flowers for all the countries. This was part of the overall philosophy of the project, I wanted to treat the fiction as if it were real. I didn't want to ignore those little cultural things just because they weren't gameplay relevant. I think having these details are what make the world feel real.
 
 To give a concrete example on how this is beneficial, I have like ~1000 words on the different designs on coins and how they've changed over time. Is this level of detail necessary? Absolutely not. But when you have to decide what a coin looks like it forces you to answer a lot of other important questions, like:
 
@@ -150,35 +127,28 @@ To give a concrete example on how this is beneficial, I have like ~1000 words on
 
 These answers aren't important to gameplay but are important for a world making sense. For example, in Lands Apart, one of the major countries collapsed a few decades ago. So players are unlikely to hear about it often. But because their coins are still in circulation, a player might get lucky andy find one of these out of mint coins. They can be sold for a bit more than their face value, and in the process they can learn a bit about the fallen country just by looking at the iconography.
 
-The benefit of being detailed in general is that the marginal cost of adding more detail approaches zero quite quickly. Like with the coins, I already knew the iconography the fallen country associated with, so it only took a few minutes to pick the design. Most details don't add new information, they're just rephrasing existing information and making everything more consistent.
+The benefit of being detailed in general is that the marginal cost of adding more detail approaches zero quickly. Like with the coins, all the questions that I had about them were already answered elsewhere. I already knew the symbols each country associated with, so it only took a few minutes to pick out designs and phrases. If you have a policy of being generally detailed, each addition isn't actually adding much information. Most of the time it's about rephrasing existing information and making everything more consistent.
 
-# The text based adventure game
+# Balancing Lore and Gameplay
 
-I'd like a way for this setting to reach more people, given the amount of time I've invested to it I figured I could try to make it more accessible.
+Having a hugely detailed world needs to be integrated into the story and gameplay. The story need to not require the player to have an encyclopedic knowledge about the world, but also not be inconsequential.
 
-So I've been chipping away at making a text based adventure game in this setting. I'm not the best at writing prose, so it's taking a while but I'm slowly getting better.
-
-I'm still at the phase where I'm constantly getting sidetracked by adding new features to my bespoke text based game engine, but it's very cool, at some point I may add a separate post just about how it works. But the main power of the system I've built is making dynamic content that adjusts based on weather, time of day, player skills, etc. and of course, the weather and time of day logic was pulled from the interactive map.
-
-I've also set up some tools to leverage LLMs to help scaffold out the dialog and navigation trees based on my notes, which is super helpful given the sheer quantity of content that needs to be adapted. Plus, dialog trees are very repetitive. I’ve considered building custom dialog editing tools to make it faster but tbh, LLMs fill that gap very well and are helpful when I decide to change the dialog format and need to update hundreds of lines of dialog to the new system in a nontrivial way.
-
-
-
-
-
-# Gameplay
-
-Having a hugely detailed world needs to be integrated into the story and gameplay. Mostly because I want it to be rewarding to pay attention to what's going on. The story need to not require the player to have an encyclopedic knowledge about the world, but also not be inconsequential.
-
-This was the trickiest part, it's easy to make a needlessly detailed world, but carving a coherent story out of it can be difficult. It took Tolkien a couple books to find the right balance of world building and story and I now have a much deeper appreciation for why.
-
-My main takeaway from this whole process was to find the path through the world for the players to traverse. Start super small and slowly expand their world. you can introduce bigger ideas and conflict, but don’t expect the players to buy in without a reason. Map out story beats and make notes for when a concept is introduced, and when it’s necessary for the players to understand it to progress. Make sure ideas are paced well.
+This was the trickiest part, it's easy to make a needlessly detailed world, but carving a coherent story out of it can be difficult. My main takeaway from this whole process was to find the path through the world for the players to traverse. Start super small and slowly expand their world. You can introduce bigger ideas and conflict, but don’t expect the players to buy in without a reason. Map out story beats and make notes for when a concept is introduced, and when it’s necessary for the players to understand it to progress.
 
 The part I definitely struggle with the most is to let a thing be simple. Since I have a ton of knowledge behind all the little details, I want to present them in that way. So if players ask about some world events, I’ve learned that I need to be okay with making it appear simpler than it is if it’s not the focus right now. If everything is crazy intricate, it becomes hard to direct attention to any of it.
 
-Too much detail can be extra problematic because of how sensitive players are to where the “intended path” is, and will try to follow cues from the DM for who to talk to and what to direct attention towards. It can be disorienting if every NPC sounds important, or a random bit of history is explained in great detail. Players will assume they’re meant to act on it.
+I remember that the game Firewatch would often use visual detail to direct players. So to indicate that a rock is climbable, they would make that edge of the rock have lots of little cracks and details. It's very effective for visual communication, and I believe this concept extends to verbal descriptions in TTRPGs. By describing a thing, you're implying it is important. But it can be disorienting if every NPC sounds important, or a random bit of history is explained in great detail. Players will assume they’re meant to act on everything.
 
-I remember that the devs of Firewatch (great game btw) would use visual detail to direct players. To draw players to a rock and let them know they could climb up it, they would make that edge of the rock have lots of little cracks and details. I believe this concept extends to descriptions in TTRPGs
+# The text based adventure game
 
+To make this setting more accessible, I've been chipping away at making a text based adventure game in this setting. 
 
-[screenshot]
+I'm still at the phase where I'm constantly getting sidetracked by adding new features to my bespoke text based game engine, but it's very interesting to work on. At some point I may add a separate post just about how it works, but the main power of the system I've built is making dynamic content that adjusts based on various things like weather, time of day, player skills, etc. and as you might have guessed, the weather and time of day logic was pulled from the interactive map.
+
+![](assets/la-text.png)
+
+I've also set up some tools to leverage LLMs to help scaffold out the dialog and navigation trees based on my notes, which is super helpful given the sheer quantity of content that needs to be adapted. Plus, dialog trees are very repetitive. I’ve considered building custom dialog editing tools to make it faster but tbh, LLMs fill that gap very well and are helpful when I decide to change the dialog format and need to update hundreds of lines of dialog to the new system in a nontrivial way.
+
+As for the writing itself, I try to not use LLMs for anything other than helping me condense my notes down. Writing this much prose is new for me, but 
+
+This project is by far the largest, and most complex thing I've ever made, so it'll take a while to adapt even a fraction over to the new format. But I'm excited to see where it goes

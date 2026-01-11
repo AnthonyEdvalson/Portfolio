@@ -1,7 +1,7 @@
 ---
 color: orange
 width: 4
-height: 2
+height: 3
 code: PRJ.065
 title: Assembly Line
 category: Project
