@@ -167,7 +167,7 @@
                         return `<iframe src="${href}" width="100%" height="100%" frameborder="0" allowtransparency="true"></iframe>`;
                     }
                     if (href.endsWith(".mov")) {
-                        return `<video src="${href}" width="100%" height="100%" controls loop autoplay disablepictureinpicture disableremoteplayback muted></video>`;
+                        return `<video src="${href}" width="100%" height="100%" controls loop autoplay playsinline disablepictureinpicture disableremoteplayback muted></video>`;
                     }
                     let html = `<img src="${href}"`;
                     if (title) {
