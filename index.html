@@ -695,6 +695,7 @@
             ]
             let leaving = false;
             window.addEventListener('scroll', () => {
+                if (document.documentElement.classList.contains('modal-open')) return;
                 let maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 let subfooter = document.getElementById('subfooter-msg');
                 let i = Math.floor((window.scrollY - maxScroll - 50) / 50);
