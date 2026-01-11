@@ -12,7 +12,7 @@ var GRID_DATA = [
     "themes": "true",
     "order": "000",
     "source": "tonyedv/000 intro.md",
-    "markdown": "I love to tinker with side projects, like experimenting with ML systems and creative writing. And to relax I love to go for a run, or mess around in sandbox video games like Factorio and Minecraft."
+    "markdown": "Entropy addict. I build AI products at Asana and weird things everywhere else."
   },
   {
     "color": "black",
@@ -140,6 +140,6 @@ var GRID_DATA = [
     "contentInGrid": "true",
     "order": "999",
     "source": "tonyedv/999 Footer.md",
-    "markdown": "<span class=\"em\"></span>\n\n[linkedin.com/in/tonyedvalson](https://www.linkedin.com/in/tonyedvalson/)\n\nSite and styes all created by me. No frameworks, no fnord, no templates. Source code is on [GitHub](https://github.com/AnthonyEdvalson/Portfolio)."
+    "markdown": "<span class=\"em\"></span>\n\n[linkedin.com/in/tonyedvalson](https://www.linkedin.com/in/tonyedvalson/)\n\nSite and styes all created by me. No frameworks, no fnord, no templates. Source code on [GitHub](https://github.com/AnthonyEdvalson/Portfolio)."
   }
 ];
