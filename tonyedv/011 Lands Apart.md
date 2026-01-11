@@ -8,21 +8,20 @@ subtitle: Expansive Fantasy Setting
 chip: dnd
 height: 5
 ---
+The Lands Apart is an open world TTRPG fantasy setting I've been iterating on over the last couple of years. I had been running campaigns with some friends and wanted to try my hand at a truly open world setting. I wanted to see what it would take to create a setting where players could go anywhere at any time, and I'd always have content prepared in advance.
 
-The Lands Apart is an open world TTRPG fantasy setting I've been iterating on over the last couple of years. It was born out of COVID, I had been running campaigns with friends at the time and wanted to try my hand at a truly open world setting where players could go anywhere at any time, and I'd always have content prepared in advance, and answers to any question that comes up.
-
-The setting was largely inspired by Elden Ring and was blown away by how much work went into the world building. I've never seen a game that requires the player to study architectural styles and plant cultivation techniques to piece together major historical events. Every asset in the game has had so much thought put into it, and I wanted to see what what would happen if I tried to apply the same level of obsessive detail in my own setting.
+The setting was largely inspired by Elden Ring. Playing that game has had a huge impact on how I view worldbuilding in general. I've never seen a game that requires the player to study architectural styles and plant cultivation techniques to piece together major historical events. Every asset in the game has had so much thought put into it. I wanted to see what would happen if I tried to apply the same level of obsessive detail in my own setting.
 
 So, I made Lands Apart, and it definitely has a lot of detail. As of 2025 I've made:
 
 - 320,000 words of notes.
-- A google-maps like site for navigating the map. It has weather, time zone, and travel modeling tools.
+- A Google Maps-like site for navigating the map. It has weather, time zone, and travel modeling tools.
 - 200+ points of interest to explore.
 - 40,000 years of history.
 - 16 religions.
-- 80 session outline for the main quest, 7 major side quests
+- 80 sessions planned out for the main quest, plus 7 major side quests
 
-For your own sanity I will avoid talking about the specifics of the world. Although I'd love to blab on about my homebrew D&D setting, it's not the most useful and doesn't make for a good blog post. Instead I'll be covering what it takes to create and manage a project of this scale, and some key takeaways.
+For your own sanity, I will avoid giving a deep dive into the specifics of the world. Although I'd love to blab on about my homebrew D&D setting, I know it wouldn't make for a good blog post. Instead I'll mostly be covering what it takes to create and manage a project of this scale, and some key takeaways.
 
 # Idea generation at scale
 
@@ -36,13 +35,23 @@ Specifically, I wanted to explore how belief changed in the messy ambiguity of t
 
 Having a theme like this is so helpful, because it means any thought you have about the core theme can be translated into content. And it's much easier to think about a topic you're already interested in than asking yourself "what would be interesting here?"
 
-The overarching structure of the world came up very naturally from this thinking. I knew I'd need a multiple countries with wildly different cultures that are in tension with one another. They all desire for unity but have become fragmented (hence the name, Lands Apart).
+The overarching structure of the world came up very naturally from this thinking. I knew I'd need multiple countries with wildly different cultures that are in tension with one another. They all want unity but have become fragmented (hence the name, Lands Apart).
 
-This is not just for thematic consistence, there's also a much more practical benefit. One highly useful bit of writing advice I keep coming back to, is that you'll always struggle to ever come up with a list of more than 10 interesting things. So if you need more than 10 interesting things, make lists of lists. So if I were to start and try to fill out 200 points of interest on a map, it all would have been incredibly generic. So instead I made a list of religions, broke each of those into several perspectives, broke those into ideas, and broke those down into people, places, and quests that embodied and explored them.
+This is not just for thematic consistency, there's also a much more practical benefit. One highly useful bit of writing advice I keep coming back to, is that you'll always struggle to ever come up with a list of more than 10 interesting things. So if you need more than 10 interesting things, make lists of lists. So if I were to start and try to fill out 200 points of interest on a map, it all would have come out incredibly generic and repetitive. So instead I made a list of religions, broke each of those into several perspectives, broke those into ideas, and broke those down into people, places, and quests that embodied and explored them.
+
+# Balancing Lore and Gameplay
+
+Having a hugely detailed world needs to be integrated into the story and gameplay. The story needs to not require the player to have an encyclopedic knowledge about the world, but also not be inconsequential.
+
+This was the trickiest part, it's easy to make a needlessly detailed world, but carving a coherent story out of it can be difficult. My main takeaway from this whole process was to find the path through the world for the players to traverse. Start super small and slowly expand their world. You can introduce bigger ideas and conflict, but don’t expect the players to buy in without a reason. Map out story beats and make notes for when a concept is introduced, and when it’s necessary for the players to understand it to progress.
+
+The part I definitely struggle with the most is letting a thing be simple. Since I have a ton of knowledge behind all the little details, I want to present them in that way. So if players ask about some world events, I’ve learned that I need to be okay with making it appear simpler than it is if it’s not the focus right now. If everything is crazy intricate, it becomes hard to direct attention to any of it.
+
+I remember that the game Firewatch would often use visual detail to direct players. So to indicate that a rock is climbable, they would make that edge of the rock have lots of little cracks and details. It's very effective for visual communication, and I believe this concept extends to verbal descriptions in TTRPGs. By describing a thing, you're implying it is important. But it can be disorienting if every NPC sounds important, or a random bit of history is explained in great detail. Players will assume they’re meant to act on everything.
 
 # The Map
 
-I'm a big fan of a good [map](https://www.youtube.com/watch?v=J5iJSXaVvao), my favorite thing to do in games like Minecraft is to travel around mapping out all the cool terrain formations. So of course I took the maps for the Lands Apart very seriously. And as the primary visual for what the world looks like, I wanted to make sure it was visually interesting and useful for gameplay purposes.
+I'm a big fan of a good [map](https://www.youtube.com/watch?v=J5iJSXaVvao), my favorite thing to do in games like Minecraft is to travel around mapping out all the cool terrain formations. So of course I took the maps for Lands Apart very seriously. And as the primary visual for what the world looks like, I wanted to make sure it was visually interesting and useful for gameplay purposes.
 
 I also wanted to use it to communicate the scale. I plan to only show small subsections of the world when players start and slowly reveal more.
 
@@ -54,39 +63,42 @@ Here's the full map rendered at 1/4 resolution:
 
 (btw when rendering at a lower res some of the positions get shifted weirdly, if you zoom in you'll def see some alignment issues)
 
-There's also a second map for some secret areas, but I won't show it here because spoilers. But just imagine a few more continents worth of stuff that aren't shown.
+There's also a second map for some secret areas, but I won't show it here because spoilers. But just imagine a few more continents' worth of stuff that aren't shown.
 
 ## Creating the map
 
-Creating and managing a huge map over time can be challenging since you may need to go back and make little edits, or tweak colors. These are scenarios where nondestructive editing processes are super useful. In this case I used Substance Designer. It's basically an image editor but instead of modifying image layers you build a computation tree that applies the edits for you.
+Creating and managing a huge map over time can be challenging since you may need to go back and make little edits, or tweak colors. These are scenarios where nondestructive editing processes are super useful. In this case I used Substance Designer. It's basically an image editor, but instead of modifying image layers you build a computation tree that applies the edits for you.
 
 There’s a few key benefits to doing it this way:
 1. You can dynamically change the resolution you render at, so you can make edits quickly at 1024x1024 resolution, then do the final render at very high resolutions 
 2. It’s very easy to change things with complex dependencies. I have a single grayscale bitmap showing where land is. If I want to tweak a coastline I change a single bitmap and all the colors, coastline waves, trees, and mountains will adjust accordingly.
 3. Editing images by building out an abstract syntax tree actually feels pretty natural for me.
 
-I pushed Substance to it's limits with this map. The final render produces an image of size 16384x16384, roughly the size of 32 4K images. It takes ~80GB of RAM to render, but the size is kind of necessary to be able to read the place names.
+I pushed Substance to its limits with this map. The final render produces an image of size 16384x16384, roughly the size of thirty 4K images. It takes ~80GB of RAM to render, but the size is kind of necessary to be able to read the place names.
 
 I hand painted the masks for coastlines, rivers, and biomes, but all the shading, coloring, and text was added by a very complicated substance pipeline. Here's the main part that draws the terrain:
 
 ![](assets/la-map-graph.png)
 
-I also made an interactive version of the map. This is a webpage that shows the map, plus a bunch of information about weather forecasts, time zones, and pins at various points of interest. I had to write my own time zone libraries, as well as some custom weather simulations that take the climates of reach region into account. But here's how the map looks in the UI:
+I also made an interactive version of the map. This is a webpage that shows the map, plus a bunch of information about weather forecasts, time zones, and pins at various points of interest. I had to write my own time zone libraries, as well as some custom weather simulations that take the climates of each region into account. But here's how the map looks in the UI:
 
 ![](assets/la-interactive.png)
+
+I've mostly used the map in planning and during sessions to figure things out like weather, travel distances, and nearby points of interest to direct players towards. Although it was a bit of a pain to initially set up, it's been a very useful tool.
 
 # Note Management
 
 With over 1,100 files, managing the notes for this project has not been easy. But thankfully I had recently picked up [Obsidian](https://obsidian.md/). It's a truly wonderful product and I use it for personal notes, at work, and even for writing this post right now. It's a dead simple markdown editor with some plugins to let you customize how everything works. 
 
-Since it required to share whenever talking about Obsidian, here's my file graph for the Lands Apart:
+Whenever talking about Obsidian, you're legally required to share your file graph, so here's mine for the Lands Apart vault:
+
 
 
 ![](assets/la-note-graph.png)
 
-To manage all this is quite difficult, making a change is less about adding a new note, and more becoming an expert at finding all the stuff that needs to be changed because of it. Like if I want to change a character's motivation, I need to make sure that character's note is updated, but also anywhere that trait is mentioned. This could include notes about locations, quests, or other characters.
+To manage all this is quite difficult. Making a change is less about adding a new note, and more about becoming an expert at finding all the stuff that needs to be changed because of it. Like if I want to change a character's motivation, I need to make sure that character's note is updated, but also anywhere that trait is mentioned. This could include notes about locations, quests, or other characters.
 
-Some software engineering principles become useful here, keeping notes modular is great. You have fewer files to update when each idea is self-contained. Although this is a good principle, in practice it can be difficult. If it's going to feel like a real world, things need to affect one another. This is where links can help. In general, if one file affects another, you need to link to it. That way you can follow the backlinks whenever making changes to check for consistency. This makes all the inter-note dependencies explicit.
+It's useful to apply separation of concerns here. Things are much easier to maintain if you keep notes modular and self-contained. Although this is a good principle, in practice it can be difficult. If it's going to feel like a real world, things need to affect one another. This is where links can help. In general, if one file affects another, there should be link to it. That way you can follow the backlinks whenever making changes to check for consistency. This makes all the inter-note dependencies explicit.
 
 If your notes are well maintained, you'll naturally find yourself filling in gaps. It makes it really easy to go around and add little details. Like the notes for my countries are patterned after Wikipedia, this means they include lots of silly stuff. Here's an example of one country's info card:
 
@@ -97,11 +109,12 @@ If your notes are well maintained, you'll naturally find yourself filling in gap
 > **Demonym:** Penrithian
 > **Government:** Prismatic Kingdom, feudal
 > **Area:** 93,389 sq. mi habitable, 280,167 total
-> **Population:** 8,870,00
+> **Population:** 8,870,000
 > **GDP:** 289 billion (40,000 per capita)
 > **Motto:** Her Brilliance shines in us, and in all things.
 > **Time Zone:** PEN (+12)
 > **Biomes:** Temperate forest / mountains
+> 
 > **Demographics:**
 > -  **Penrithian:** 72%
 > - **Shaskonese:** 13%
@@ -109,6 +122,7 @@ If your notes are well maintained, you'll naturally find yourself filling in gap
 > - **Marithian:** 3%
 > - **Vatichian:** 2%
 > - **Aralian:** 1%
+>   
 > **National Symbols:**
 > - **National Bird:** Mistral Dove
 > - **National Animal:** Deer
@@ -117,38 +131,30 @@ If your notes are well maintained, you'll naturally find yourself filling in gap
 > - **National Tree:** Silver Oak
 > - **National Colors:** White, blue, silver
 
-To answer your question: yes, I did actually pick national flowers for all the countries. This was part of the overall philosophy of the project, I wanted to treat the fiction as if it were real. I didn't want to ignore those little cultural things just because they weren't gameplay relevant. I think having these details are what make the world feel real.
+To answer your question: yes, I did actually pick national flowers for all the countries. This was part of the overall philosophy of the project, I wanted to treat the fiction as if it were real. I didn't want to ignore those little cultural things just because they weren't gameplay relevant. I think having these details is what makes the world feel real.
 
 To give a concrete example on how this is beneficial, I have like ~1000 words on the different designs on coins and how they've changed over time. Is this level of detail necessary? Absolutely not. But when you have to decide what a coin looks like it forces you to answer a lot of other important questions, like:
 
 1. Who is minting the coins?
 2. Do different areas use different currencies?
-3. What icons and symbols do the people minting the coins want to reinforce with their designs.
+3. What icons and symbols do the people minting the coins want to reinforce with their designs?
 
-These answers aren't important to gameplay but are important for a world making sense. For example, in Lands Apart, one of the major countries collapsed a few decades ago. So players are unlikely to hear about it often. But because their coins are still in circulation, a player might get lucky andy find one of these out of mint coins. They can be sold for a bit more than their face value, and in the process they can learn a bit about the fallen country just by looking at the iconography.
+These answers aren't important to gameplay but are important for a world making sense. For example, in Lands Apart, one of the major countries collapsed a few decades ago. So players are unlikely to hear about it often. But because their coins are still in circulation, a player might get lucky and find one of these out-of-mint coins. They can be sold for a bit more than their face value, and in the process they can learn a bit about the fallen country just by looking at the iconography.
 
-The benefit of being detailed in general is that the marginal cost of adding more detail approaches zero quickly. Like with the coins, all the questions that I had about them were already answered elsewhere. I already knew the symbols each country associated with, so it only took a few minutes to pick out designs and phrases. If you have a policy of being generally detailed, each addition isn't actually adding much information. Most of the time it's about rephrasing existing information and making everything more consistent.
+The benefit of being detailed in general is that the marginal cost of adding more detail approaches zero quickly. Like with the coins, all the questions that I had about them were already answered elsewhere. I had already known the symbols each country associated with, so it only took a few minutes to pick out designs and phrases. If you have a policy of being generally detailed, each addition isn't actually adding much information. Most of the time it's about rephrasing existing information and making everything more consistent.
 
-# Balancing Lore and Gameplay
+# Text-based adventure game
 
-Having a hugely detailed world needs to be integrated into the story and gameplay. The story need to not require the player to have an encyclopedic knowledge about the world, but also not be inconsequential.
+To make this setting more accessible, I've been chipping away at making a text-based adventure game in this setting. Because currently, unless you want to read a big pile of markdown documents, or you want me to run a game for you in this setting, there's no way to experience it.
 
-This was the trickiest part, it's easy to make a needlessly detailed world, but carving a coherent story out of it can be difficult. My main takeaway from this whole process was to find the path through the world for the players to traverse. Start super small and slowly expand their world. You can introduce bigger ideas and conflict, but don’t expect the players to buy in without a reason. Map out story beats and make notes for when a concept is introduced, and when it’s necessary for the players to understand it to progress.
-
-The part I definitely struggle with the most is to let a thing be simple. Since I have a ton of knowledge behind all the little details, I want to present them in that way. So if players ask about some world events, I’ve learned that I need to be okay with making it appear simpler than it is if it’s not the focus right now. If everything is crazy intricate, it becomes hard to direct attention to any of it.
-
-I remember that the game Firewatch would often use visual detail to direct players. So to indicate that a rock is climbable, they would make that edge of the rock have lots of little cracks and details. It's very effective for visual communication, and I believe this concept extends to verbal descriptions in TTRPGs. By describing a thing, you're implying it is important. But it can be disorienting if every NPC sounds important, or a random bit of history is explained in great detail. Players will assume they’re meant to act on everything.
-
-# The text based adventure game
-
-To make this setting more accessible, I've been chipping away at making a text based adventure game in this setting. 
-
-I'm still at the phase where I'm constantly getting sidetracked by adding new features to my bespoke text based game engine, but it's very interesting to work on. At some point I may add a separate post just about how it works, but the main power of the system I've built is making dynamic content that adjusts based on various things like weather, time of day, player skills, etc. and as you might have guessed, the weather and time of day logic was pulled from the interactive map.
+I'm still at the phase where I'm constantly getting sidetracked by adding new features to my bespoke text-based game engine, but it's very interesting to work on. At some point I may add a separate post just about how it works, but the main power of the system I've built is making dynamic content that adjusts based on various things like weather, time of day, player skills, etc. And as you might have guessed, the weather and time of day logic was pulled from the interactive map.
 
 ![](assets/la-text.png)
 
 I've also set up some tools to leverage LLMs to help scaffold out the dialog and navigation trees based on my notes, which is super helpful given the sheer quantity of content that needs to be adapted. Plus, dialog trees are very repetitive. I’ve considered building custom dialog editing tools to make it faster but tbh, LLMs fill that gap very well and are helpful when I decide to change the dialog format and need to update hundreds of lines of dialog to the new system in a nontrivial way.
 
-As for the writing itself, I try to not use LLMs for anything other than helping me condense my notes down. Writing this much prose is new for me, but 
+As for the writing itself, I try to not use LLMs for anything other than helping me condense my notes down. Writing this much prose is new for me, but it's where I'm learning the most.
 
-This project is by far the largest, and most complex thing I've ever made, so it'll take a while to adapt even a fraction over to the new format. But I'm excited to see where it goes
+---
+
+This project is by far the largest and most complex thing I've ever made, so it'll take a while to adapt even a fraction of it over to the new format. But I'm excited to see where it goes! It'll probably be a few years before anything is presentable, but I know that I'll learn a ton from the process.

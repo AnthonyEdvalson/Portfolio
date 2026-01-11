@@ -21,7 +21,7 @@
         <meta name="copyright" content="Tony Edvalson">
         <meta name="keywords" content="Tony Edvalson, software engineer, machine learning, personal website, projects, portfolio">
         <meta name="theme-color" content="#0a0a0a" id="theme-color">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-M50JEYPFZE"></script>
@@ -177,7 +177,7 @@
                     return html;
                 };
 
-                marked.use({ renderer });
+                marked.use({ renderer, breaks: true });
 
                 var bodyHtml;
                 if (window.marked && window.marked.parse) {
@@ -622,6 +622,70 @@
             })();
         </script>
         <script>
+            /* Mobile: trigger hover on centered chip tiles since touch devices can't hover */
+            (function() {
+                if (window.matchMedia('(max-width: 600px)').matches) {
+                    let currentHoveredTile = null;
+
+                    function updateCenteredChip() {
+                        const scrollY = window.scrollY || window.pageYOffset;
+                        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                        const atTop = scrollY < 10;
+                        const atBottom = scrollY >= maxScroll - 10;
+
+                        let closestTile = null;
+                        const viewportCenter = window.innerHeight / 2;
+
+                        if (!atTop && !atBottom) {
+                            const tiles = document.querySelectorAll('.tile:has(.tile__chip)');
+                            let closestDistance = Infinity;
+
+                            tiles.forEach(tile => {
+                                const rect = tile.getBoundingClientRect();
+                                const tileCenter = rect.top + rect.height / 2;
+                                const distance = Math.abs(tileCenter - viewportCenter);
+                                
+                                if (distance < closestDistance && rect.top < window.innerHeight && rect.bottom > 0) {
+                                    closestDistance = distance;
+                                    closestTile = tile;
+                                }
+                            });
+                        }
+
+                        if (closestTile !== currentHoveredTile) {
+                            if (currentHoveredTile) {
+                                const oldIframe = currentHoveredTile.querySelector('.tile__chip');
+                                if (oldIframe && oldIframe.contentWindow) {
+                                    oldIframe.contentWindow.postMessage({ type: "hover", value: false }, "*");
+                                }
+                            }
+                            if (closestTile) {
+                                const newIframe = closestTile.querySelector('.tile__chip');
+                                if (newIframe && newIframe.contentWindow) {
+                                    newIframe.contentWindow.postMessage({ type: "hover", value: true }, "*");
+                                }
+                            }
+                            currentHoveredTile = closestTile;
+                        }
+
+                        if (currentHoveredTile) {
+                            const rect = currentHoveredTile.getBoundingClientRect();
+                            const iframe = currentHoveredTile.querySelector('.tile__chip');
+                            if (iframe && iframe.contentWindow) {
+                                // y goes from 1 (viewport center at tile bottom) to 0 (viewport center at tile top)
+                                const y = (viewportCenter - rect.top) / rect.height;
+                                const clampedY = Math.max(0, Math.min(1, y));
+                                iframe.contentWindow.postMessage({ type: "mousemove", x: 0.5, y: clampedY }, "*");
+                            }
+                        }
+                    }
+
+                    window.addEventListener('scroll', updateCenteredChip, { passive: true });
+                    window.addEventListener('resize', updateCenteredChip, { passive: true });
+                }
+            })();
+        </script>
+        <script>
             /* Only works on iOS and other browsers that allow scrolling past the bottom of the page */
             const msgs = [
                 "Cold",
@@ -634,6 +698,7 @@
                 let maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 let subfooter = document.getElementById('subfooter-msg');
                 let i = Math.floor((window.scrollY - maxScroll - 50) / 50);
+                console.log(window.scrollY, maxScroll, i);
                 if (i < 0) {
                     subfooter.innerText = "";
                 }
