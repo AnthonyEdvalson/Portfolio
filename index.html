@@ -402,7 +402,7 @@
 
                 modal.hidden = false;
                 modal.scrollTop = 0;
-                document.body.style.overflow = "hidden";
+                document.documentElement.classList.add("modal-open");
 
                 if (item.code) {
                     window.location.hash = encodeURIComponent(item.code);
@@ -431,7 +431,7 @@
                 modal.hidden = true;
                 modal.classList.remove("modal--expanded");
                 modalBody.innerHTML = "";
-                document.body.style.overflow = "";
+                document.documentElement.classList.remove("modal-open");
                 window.location.hash = "";
             }
 
